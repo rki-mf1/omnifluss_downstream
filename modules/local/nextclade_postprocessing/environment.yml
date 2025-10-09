@@ -2,4 +2,4 @@ channels:
   - conda-forge
   - bioconda
 dependencies:
-  - bioconda::nextclade=3.11.0
+  - pandas==2.3.3

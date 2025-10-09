@@ -3,14 +3,15 @@
     IMPORT MODULES / SUBWORKFLOWS / FUNCTIONS
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
-include { NEXTCLADE_SORT         } from '../modules/local/nextclade_sort/main'
-include { NEXTCLADE_DATASETGET   } from '../modules/nf-core/nextclade/datasetget/main'
-include { NEXTCLADE_RUN          } from '../modules/nf-core/nextclade/run/main' 
-include { MULTIQC                } from '../modules/nf-core/multiqc/main'
-include { paramsSummaryMap       } from 'plugin/nf-schema'
-include { paramsSummaryMultiqc   } from '../subworkflows/nf-core/utils_nfcore_pipeline'
-include { softwareVersionsToYAML } from '../subworkflows/nf-core/utils_nfcore_pipeline'
-include { methodsDescriptionText } from '../subworkflows/local/utils_nfcore_omnifluss_downstream_pipeline'
+include { NEXTCLADE_SORT           } from '../modules/local/nextclade_sort/main'
+include { NEXTCLADE_DATASETGET     } from '../modules/nf-core/nextclade/datasetget/main'
+include { NEXTCLADE_RUN            } from '../modules/nf-core/nextclade/run/main' 
+include { NEXTCLADE_POSTPROCESSING } from '../modules/local/nextclade_postprocessing/main' 
+include { MULTIQC                  } from '../modules/nf-core/multiqc/main'
+include { paramsSummaryMap         } from 'plugin/nf-schema'
+include { paramsSummaryMultiqc     } from '../subworkflows/nf-core/utils_nfcore_pipeline'
+include { softwareVersionsToYAML   } from '../subworkflows/nf-core/utils_nfcore_pipeline'
+include { methodsDescriptionText   } from '../subworkflows/local/utils_nfcore_omnifluss_downstream_pipeline'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -32,6 +33,7 @@ workflow OMNIFLUSS_DOWNSTREAM {
     ch_nextclade_sort_input = ch_consensus_sequences.collect{it[1]}
 
     NEXTCLADE_SORT(ch_nextclade_sort_input)
+    ch_versions.mix(NEXTCLADE_SORT.out.versions)
 
     //combine sort_directory, file endings and tags according to selected pathogen
     //filter out files that don't exist (type/segment not present)
@@ -52,9 +54,10 @@ workflow OMNIFLUSS_DOWNSTREAM {
         )
 
         ch_dataset = NEXTCLADE_DATASETGET.out.dataset.map{ dataset ->
-            def dir_name = dataset.getBaseName()
+            def dir_name = dataset.getBaseName().replaceAll('-','_') //replacing all "-" with "_", because parameters are not allowed to have "-"
             [[id:params["mapping_"+ dir_name]], dataset]
         }
+
         
         // join samples and datasets
         ch_tmp_join = ch_nextclade_run_input.join(ch_dataset)
@@ -80,6 +83,11 @@ workflow OMNIFLUSS_DOWNSTREAM {
         ch_nextclade_run_input,
         ch_dataset
     )
+
+    NEXTCLADE_POSTPROCESSING(
+        NEXTCLADE_RUN.out.csv
+    )
+    ch_versions.mix(NEXTCLADE_POSTPROCESSING.out.versions)
 
     //
     // Collate and save software versions
