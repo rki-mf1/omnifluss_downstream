@@ -29,15 +29,25 @@ workflow OMNIFLUSS_DOWNSTREAM {
     ch_versions = Channel.empty()
     ch_multiqc_files = Channel.empty()
 
-    // collect all channels
+    // collect all consensus sequences
     ch_nextclade_sort_input = ch_consensus_sequences.collect{it[1]}
 
+
+    //
+    // NEXTCLADE_SORT:
+    // Automatically deposit consensus sequences into species and clade subfolders 
+    //
     NEXTCLADE_SORT(ch_nextclade_sort_input)
     ch_versions.mix(NEXTCLADE_SORT.out.versions)
 
-    //combine sort_directory, file endings and tags according to selected pathogen
-    //filter out files that don't exist (type/segment not present)
-    ch_nextclade_run_input = NEXTCLADE_SORT.out.sort_directory
+    // channel: "path/to/nextstrain"
+    ch_nextclade_sort = NEXTCLADE_SORT.out.sort_directory
+
+
+    // combine directory from NEXTCLADE_SORT, file extensions, and tags according to selected pathogen
+    // filter out files that don't exist (type/segment not present)
+    // channel: [[id:tag], path/to/sequences.fasta]
+    ch_nextclade_run_input = ch_nextclade_sort
                                 .combine( Channel.from(params.nextclade_sort_extensions.split(",")))
                                 .merge( Channel.from(params.nextclade_sort_tags.split(",")))
                                 .map {sort_directory, suffix, tag ->
@@ -45,26 +55,38 @@ workflow OMNIFLUSS_DOWNSTREAM {
                                 }
                                 .filter {_meta, path -> path.exists()}
 
+
+
     if (params.get_nextclade_dataset) { 
+        // channel: ["nextclade_reference_tag"]
         ch_nextclade_datasetget_input = Channel.from(params.nextclade_dataset_tags.split(","))
 
+        //
+        // NEXTCLADE_DATASETGET:
+        // Download specified nextclade reference dataset
+        //
         NEXTCLADE_DATASETGET(
             ch_nextclade_datasetget_input,
             ""
         )
 
+        // channel: [[id:tag], path/to/nextclade_reference_set]
         ch_dataset = NEXTCLADE_DATASETGET.out.dataset.map{ dataset ->
             def dir_name = dataset.getBaseName()
             [[id:params["mapping_"+ dir_name]], dataset]
-        }
+        } 
+
         
         // join samples and datasets
         ch_tmp_join = ch_nextclade_run_input.join(ch_dataset)
 
+        // channel: [[id:tag], path/to/sequences.fasta]
         ch_nextclade_run_input = ch_tmp_join.map { meta, sample, _dataset ->
             return [meta, sample] 
         }
+        ch_nextclade_run_input
 
+        // channel: [path/to/nextclade_reference_set]
         ch_dataset = ch_tmp_join.map { _meta, _sample, dataset ->
             return dataset
         }
@@ -72,17 +94,26 @@ workflow OMNIFLUSS_DOWNSTREAM {
     } else {
 
         // use a mapping to load the references in the correct order
+        // channel: [path/to/nextclade_reference_set]
         ch_dataset = ch_nextclade_run_input.map { meta, _path ->
             return params["dataset_"+ meta.id]
         }
 
     }
 
+    //
+    // NEXTLCADE_RUN:
+    // Perform the nextclade analysis on a set of consensus sequences, with their corresponding reference dataset
+    //
     NEXTCLADE_RUN(
         ch_nextclade_run_input,
         ch_dataset
     )
 
+    //
+    // NEXTCLADE_POSTPROCESSING
+    // Perform one-hot-encoding on the columns: "aaSubstitutions", "aaDeletions" and "aaInsertions" of the resulting nextclade csv 
+    //
     NEXTCLADE_POSTPROCESSING(
         NEXTCLADE_RUN.out.csv
     )
