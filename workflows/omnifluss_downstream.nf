@@ -109,6 +109,8 @@ workflow OMNIFLUSS_DOWNSTREAM {
         ch_nextclade_run_input,
         ch_dataset
     )
+    
+    ch_multiqc_files = ch_multiqc_files.mix(NEXTCLADE_RUN.out.csv.map{meta, csv -> csv}.collect())
 
     //
     // NEXTCLADE_POSTPROCESSING
