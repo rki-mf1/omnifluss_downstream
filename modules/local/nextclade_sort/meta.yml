@@ -1,0 +1,24 @@
+name: "NEXTCLADE_SORT"
+description: sort fasta sequences in groups (e.g. type, segment)
+keywords:
+  - nextclade
+  - sorting
+
+input:
+  - fastas:
+      type: file
+      description: to be sorted fasta files
+
+output:
+  - sort_directory:
+      type: directory
+      description: directory containing the sorted fasta sequences
+  - versions:
+      type: file
+      description: File containing software versions
+      pattern: "versions.yml"
+
+authors:
+  - "@DimitriTernovoj"
+maintainers:
+  - "@DimitriTernovoj"

@@ -1,0 +1,33 @@
+name: "NEXTCLADE_POSTPROCESSING"
+description: process csv-file from nextclade. Perform one-hot-encoding on the columns (aaSubstitutions, aaDeletions, aaInsertions)
+keywords:
+  - nextclade
+  - python
+  - pandas
+  - one-hot-encoding
+
+input:
+  - meta:
+      type: map
+      description: |
+        Groovy Map containing type/group information
+        e.g. `[ id:'H0N0_HA' ]`
+  - csv:
+      type: file
+      description: csv file produced by nextclade run
+      pattern: "*.csv"
+
+output:
+  - adapted_csv:
+      type: file
+      description: adapted nextclade csv file
+      pattern: "*_nextclade_adapted.csv"
+  - versions:
+      type: file
+      description: File containing software versions
+      pattern: "versions.yml"
+
+authors:
+  - "@DimitriTernovoj"
+maintainers:
+  - "@DimitriTernovoj"
