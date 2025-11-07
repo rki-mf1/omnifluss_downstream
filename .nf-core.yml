@@ -1,8 +1,17 @@
-repository_type: pipeline
-
-nf_core_version: 3.3.1
-
 lint:
+  files_exist:
+    - conf/igenomes.config
+    - conf/igenomes_ignored.config
+    - conf/igenomes.config
+    - conf/igenomes.config
+    - conf/igenomes_ignored.config
+    - CODE_OF_CONDUCT.md
+    - assets/nf-core-omnifluss_downstream_logo_light.png
+    - docs/images/nf-core-omnifluss_downstream_logo_light.png
+    - docs/images/nf-core-omnifluss_downstream_logo_dark.png
+    - .github/ISSUE_TEMPLATE/config.yml
+    - .github/workflows/awstest.yml
+    - .github/workflows/awsfulltest.yml
   files_unchanged:
     - .github/CONTRIBUTING.md
     - .prettierignore
@@ -19,6 +28,9 @@ lint:
     - .github/PULL_REQUEST_TEMPLATE.md
     - assets/email_template.txt
     - docs/README.md
+  included_configs: false
+  multiqc_config:
+    - report_comment
   nextflow_config:
     - process.cpus
     - process.memory
@@ -32,42 +44,26 @@ lint:
     - validation.help.afterText
     - validation.summary.beforeText
     - validation.summary.afterText
-  multiqc_config:
-    - report_comment
-  files_exist:
-    - conf/igenomes.config
-    - conf/igenomes_ignored.config
-    - conf/igenomes.config
-    - conf/igenomes.config
-    - conf/igenomes_ignored.config
-    - CODE_OF_CONDUCT.md
-    - assets/nf-core-omnifluss_downstream_logo_light.png
-    - docs/images/nf-core-omnifluss_downstream_logo_light.png
-    - docs/images/nf-core-omnifluss_downstream_logo_dark.png
-    - .github/ISSUE_TEMPLATE/config.yml
-    - .github/workflows/awstest.yml
-    - .github/workflows/awsfulltest.yml
   readme:
     - nextflow_badge
     - nfcore_template_badge
-  included_configs: false
-
+nf_core_version: 3.4.1
+repository_type: pipeline
 template:
-  org: rki-mf1
-  name: omnifluss_downstream
-  description: Omnifluss pipeline for downstream analyses.
   author: DimitriTernovoj
-  version: 1.0.0dev
-  force: true
+  description: Omnifluss pipeline for downstream analyses.
+  force: false
+  is_nfcore: false
+  name: omnifluss_downstream
+  org: rki-mf1
   outdir: .
   skip_features:
     - igenomes
     - github_badges
-    - nf_core_configs
     - gitpod
     - codespaces
     - fastqc
     - adaptivecard
     - slackreport
     - seqera_platform
-  is_nfcore: false
+  version: 1.0.0dev
