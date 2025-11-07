@@ -63,7 +63,6 @@ template:
   skip_features:
     - igenomes
     - github_badges
-    - nf_core_configs
     - gitpod
     - codespaces
     - fastqc
