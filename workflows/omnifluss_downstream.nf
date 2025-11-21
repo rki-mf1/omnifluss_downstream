@@ -7,6 +7,7 @@ include { NEXTCLADE_SORT } from '../modules/local/nextclade_sort/main'
 include { NEXTCLADE_DATASETGET } from '../modules/nf-core/nextclade/datasetget/main'
 include { NEXTCLADE_RUN } from '../modules/nf-core/nextclade/run/main'
 include { NEXTCLADE_POSTPROCESSING } from '../modules/local/nextclade_postprocessing/main'
+include { NEXTCLADE_DATASET_PROVENANCE } from '../modules/local/nextclade_dataset_provenance/main'
 include { MULTIQC } from '../modules/nf-core/multiqc/main'
 include { paramsSummaryMap } from 'plugin/nf-schema'
 include { paramsSummaryMultiqc } from '../subworkflows/nf-core/utils_nfcore_pipeline'
@@ -109,6 +110,18 @@ workflow OMNIFLUSS_DOWNSTREAM {
     )
 
     ch_multiqc_files = ch_multiqc_files.mix(NEXTCLADE_RUN.out.csv.map { meta, csv -> csv }.collect())
+
+    //
+    // NEXTCLADE_DATASET_PROVENANCE
+    // Extract dataset version information from nextclade dataset json and nextclade csv output
+    // Combined information from the nextclade dataset json that was run on the respective sequences
+    //
+    NEXTCLADE_DATASET_PROVENANCE(
+        NEXTCLADE_RUN.out.dataset_pathogen_json, 
+        NEXTCLADE_RUN.out.csv
+    )
+    ch_versions = ch_versions.mix(NEXTCLADE_DATASET_PROVENANCE.out.versions)
+    ch_multiqc_files = ch_multiqc_files.mix(NEXTCLADE_DATASET_PROVENANCE.out.dataset_provenance.map { meta, provenance -> provenance }.collect())
 
     //
     // NEXTCLADE_POSTPROCESSING

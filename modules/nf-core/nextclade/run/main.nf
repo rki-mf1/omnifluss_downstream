@@ -22,6 +22,7 @@ process NEXTCLADE_RUN {
     tuple val(meta), path("${prefix}.aligned.fasta") , optional:true, emit: fasta_aligned
     tuple val(meta), path("*_translation.*.fasta")   , optional:true, emit: fasta_translation
     tuple val(meta), path("${prefix}.nwk")           , optional:true, emit: nwk
+    tuple val(meta), path("${dataset}/pathogen.json"), optional:true, emit: dataset_pathogen_json
     path "versions.yml"                              , emit: versions
 
     when:
