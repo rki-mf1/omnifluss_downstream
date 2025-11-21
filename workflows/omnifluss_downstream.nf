@@ -38,7 +38,7 @@ workflow OMNIFLUSS_DOWNSTREAM {
     // Automatically deposit consensus sequences into species and clade subfolders 
     //
     NEXTCLADE_SORT(ch_nextclade_sort_input)
-    ch_versions.mix(NEXTCLADE_SORT.out.versions)
+    ch_versions = ch_versions.mix(NEXTCLADE_SORT.out.versions)
 
     // channel: "path/to/nextstrain"
     ch_nextclade_sort = NEXTCLADE_SORT.out.sort_directory
@@ -69,6 +69,8 @@ workflow OMNIFLUSS_DOWNSTREAM {
             ch_nextclade_datasetget_input,
             "",
         )
+        ch_versions = ch_versions.mix(NEXTCLADE_DATASETGET.out.versions)
+
 
         // channel: [[id:tag], path/to/nextclade_reference_set]
         ch_dataset = NEXTCLADE_DATASETGET.out.dataset.map { dataset ->
@@ -108,7 +110,7 @@ workflow OMNIFLUSS_DOWNSTREAM {
         ch_nextclade_run_input,
         ch_dataset,
     )
-
+    ch_versions = ch_versions.mix(NEXTCLADE_RUN.out.versions)
     ch_multiqc_files = ch_multiqc_files.mix(NEXTCLADE_RUN.out.csv.map { meta, csv -> csv }.collect())
 
     //
@@ -130,7 +132,8 @@ workflow OMNIFLUSS_DOWNSTREAM {
     NEXTCLADE_POSTPROCESSING(
         NEXTCLADE_RUN.out.csv
     )
-    ch_versions.mix(NEXTCLADE_POSTPROCESSING.out.versions)
+    ch_versions = ch_versions.mix(NEXTCLADE_POSTPROCESSING.out.versions)
+
 
     //
     // Collate and save software versions
