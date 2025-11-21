@@ -7,8 +7,7 @@ process NEXTCLADE_DATASET_PROVENANCE {
         : 'biocontainers/pandas:1.4.3'}"
 
     input:
-    tuple val(meta), path(dataset_pathogen_json)
-    tuple val(meta), path(nextclade_csv)
+    tuple val(meta), path(dataset_pathogen_json), path(nextclade_csv)
 
     output:
     tuple val(meta), path("${meta.id}_nextclade_dataset_provenance.tsv"), emit: dataset_provenance
