@@ -35,24 +35,28 @@ custom_data:
         title: 'Sample'
         description: 'Sample identifier or name'
         scale: false  # Treat as string
-      nextclade_index:
+      index:
         title: 'Nextclade Index'
         description: 'Nextclade sample index number'
         scale: false  # Treat as string
         hidden: true  # Hide this column by default
-      nextclade_dataset_tag:
+      nextclade.dataset.tag:
         title: 'Nextclade Dataset Tag'
         description: 'Version tag for the Nextclade dataset'
         scale: false  # Treat as string
-      nextclade_dataset_name:
+      nextclade.dataset.name:
         title: 'Nextclade Dataset Name'
         description: 'Full name of the Nextclade dataset used'
         scale: false  # Treat as string
-      nextclade_dataset_shortcut:
+      nextclade.dataset.shortcut:
         title: 'Nextclade Dataset Shortcut'
         description: 'Shortest shortcut identifier for the dataset'
         scale: false  # Treat as string
-      internal_dataset_id:
+      nextclade.dataset.reference.name:
+        title: 'Nextclade Dataset Reference Name'
+        description: 'Reference name of the dataset used by Nextclade'
+        scale: false  # Treat as string
+      omnifluss.dataset_id:
         title: 'Internal ID'
         description: 'Internal dataset identifier used by the pipeline'
         scale: false  # Treat as string
