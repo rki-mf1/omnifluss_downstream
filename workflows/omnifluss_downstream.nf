@@ -8,6 +8,7 @@ include { NEXTCLADE_DATASETGET } from '../modules/nf-core/nextclade/datasetget/m
 include { NEXTCLADE_RUN } from '../modules/nf-core/nextclade/run/main'
 include { NEXTCLADE_POSTPROCESSING } from '../modules/local/nextclade_postprocessing/main'
 include { NEXTCLADE_DATASET_PROVENANCE } from '../modules/local/nextclade_dataset_provenance/main'
+include { NEXTCLADE_PER_SAMPLE_TABLE } from '../modules/local/nextclade_per_sample_table/main'
 include { MULTIQC } from '../modules/nf-core/multiqc/main'
 include { paramsSummaryMap } from 'plugin/nf-schema'
 include { paramsSummaryMultiqc } from '../subworkflows/nf-core/utils_nfcore_pipeline'
