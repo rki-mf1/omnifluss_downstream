@@ -24,6 +24,12 @@ def get_sample_ids(nextclade_csv):
         columns={"seqName": "sample", "index": "nextclade_index"}
     )
 
+def append_versions_to_nextclade_output(nextclade_csv, dataset):
+    df = pd.read_csv(nextclade_csv, sep=";")
+    df["nextclade_dataset_tag"] = dataset["tag"]
+    df["nextclade_dataset_name"] = dataset["name"]
+    df["nextclade_dataset_shortcut"] = dataset["shortcut"]
+    return df
 
 def main():
     parser = argparse.ArgumentParser()
@@ -38,15 +44,25 @@ def main():
     internal_dataset_id = args.meta
     dataset = get_nextclade_dataset_version(args.json)
 
-    df_provenance = get_sample_ids(args.nextclade_csv)
-
-    df_provenance["nextclade_dataset_tag"] = dataset["tag"]
-    df_provenance["nextclade_dataset_name"] = dataset["name"]
-    df_provenance["nextclade_dataset_shortcut"] = dataset["shortcut"]
+    df_provenance = append_versions_to_nextclade_output(
+        args.nextclade_csv,
+        dataset,
+    )
 
     df_provenance["internal_dataset_id"] = internal_dataset_id
     df_provenance.to_csv(
-        f"{internal_dataset_id}_nextclade_dataset_provenance.tsv", sep="\t", index=False
+        f"{internal_dataset_id}_with_dataset_provenance.tsv", sep="\t", index=False
+    )
+    df_provenance.rename(columns={"seqName": "sample", "index": "nextclade_index"}, inplace=True)
+    df_provenance.to_csv(
+        f"{internal_dataset_id}_nextclade_dataset_provenance.tsv", sep="\t", index=False, columns=[
+            "sample",
+            "nextclade_index",
+            "nextclade_dataset_tag",
+            "nextclade_dataset_name",
+            "nextclade_dataset_shortcut",
+            "internal_dataset_id",
+        ], 
     )
 
 

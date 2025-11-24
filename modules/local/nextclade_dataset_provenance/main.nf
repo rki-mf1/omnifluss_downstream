@@ -10,7 +10,8 @@ process NEXTCLADE_DATASET_PROVENANCE {
     tuple val(meta), path(dataset_pathogen_json), path(nextclade_csv)
 
     output:
-    tuple val(meta), path("${meta.id}_nextclade_dataset_provenance.tsv"), emit: dataset_provenance
+    tuple val(meta), path("${meta.id}_nextclade_dataset_provenance.tsv"), emit: mqc_dataset_provenance
+    tuple val(meta), path("${meta.id}_with_dataset_provenance.tsv"), emit: nextclade_with_dataset_provenance
     path "versions.yml", emit: versions
 
     script:
