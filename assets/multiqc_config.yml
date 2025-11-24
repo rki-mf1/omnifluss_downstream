@@ -52,6 +52,10 @@ custom_data:
         title: 'Nextclade Dataset Shortcut'
         description: 'Shortest shortcut identifier for the dataset'
         scale: false  # Treat as string
+      nextclade_dataset_reference_name:
+        title: 'Nextclade Dataset Reference Name'
+        description: 'Reference name of the dataset used by Nextclade'
+        scale: false  # Treat as string
       internal_dataset_id:
         title: 'Internal ID'
         description: 'Internal dataset identifier used by the pipeline'

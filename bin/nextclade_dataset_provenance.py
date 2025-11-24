@@ -11,11 +11,12 @@ def get_nextclade_dataset_version(json_path):
 
     tag = data.get("version").get("tag")
     name = data.get("attributes").get("name")
+    ref_name = data.get("attributes").get("reference name")
     if "shortcuts" in data:
         shortcut = data.get("shortcuts")[0]
     else:
         shortcut = None
-    return {"tag": tag, "name": name, "shortcut": shortcut}
+    return {"tag": tag, "name": name, "shortcut": shortcut, "reference name": ref_name}
 
 
 def get_sample_ids(nextclade_csv):
@@ -29,6 +30,7 @@ def append_versions_to_nextclade_output(nextclade_csv, dataset):
     df["nextclade_dataset_tag"] = dataset["tag"]
     df["nextclade_dataset_name"] = dataset["name"]
     df["nextclade_dataset_shortcut"] = dataset["shortcut"]
+    df["nextclade_dataset_reference_name"] = dataset["reference name"]
     return df
 
 def main():
@@ -61,6 +63,7 @@ def main():
             "nextclade_dataset_tag",
             "nextclade_dataset_name",
             "nextclade_dataset_shortcut",
+            "nextclade_dataset_reference_name",
             "internal_dataset_id",
         ], 
     )
