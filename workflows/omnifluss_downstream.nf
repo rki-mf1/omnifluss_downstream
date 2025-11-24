@@ -122,7 +122,7 @@ workflow OMNIFLUSS_DOWNSTREAM {
         NEXTCLADE_RUN.out.dataset_pathogen_json.join(NEXTCLADE_RUN.out.csv)
     )
     ch_versions = ch_versions.mix(NEXTCLADE_DATASET_PROVENANCE.out.versions)
-    ch_multiqc_files = ch_multiqc_files.mix(NEXTCLADE_DATASET_PROVENANCE.out.dataset_provenance.map { meta, provenance -> provenance }.collect())
+    ch_multiqc_files = ch_multiqc_files.mix(NEXTCLADE_DATASET_PROVENANCE.out.mqc_dataset_provenance.map { _meta, provenance -> provenance }.collect())
 
     //
     // NEXTCLADE_POSTPROCESSING
