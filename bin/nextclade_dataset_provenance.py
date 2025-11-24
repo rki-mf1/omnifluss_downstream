@@ -19,18 +19,12 @@ def get_nextclade_dataset_version(json_path):
     return {"tag": tag, "name": name, "shortcut": shortcut, "reference name": ref_name}
 
 
-def get_sample_ids(nextclade_csv):
-    df = pd.read_csv(nextclade_csv, sep=";")
-    return df[["seqName", "index"]].rename(
-        columns={"seqName": "sample", "index": "nextclade_index"}
-    )
-
 def append_versions_to_nextclade_output(nextclade_csv, dataset):
     df = pd.read_csv(nextclade_csv, sep=";")
-    df["nextclade_dataset_tag"] = dataset["tag"]
-    df["nextclade_dataset_name"] = dataset["name"]
-    df["nextclade_dataset_shortcut"] = dataset["shortcut"]
-    df["nextclade_dataset_reference_name"] = dataset["reference name"]
+    df["nextclade.dataset.tag"] = dataset["tag"]
+    df["nextclade.dataset.name"] = dataset["name"]
+    df["nextclade.dataset.shortcut"] = dataset["shortcut"]
+    df["nextclade.dataset.reference.name"] = dataset["reference name"]
     return df
 
 def main():
@@ -51,20 +45,22 @@ def main():
         dataset,
     )
 
-    df_provenance["internal_dataset_id"] = internal_dataset_id
+    df_provenance["omnifluss.dataset_id"] = internal_dataset_id
     df_provenance.to_csv(
         f"{internal_dataset_id}_with_dataset_provenance.tsv", sep="\t", index=False
     )
-    df_provenance.rename(columns={"seqName": "sample", "index": "nextclade_index"}, inplace=True)
+    # Prepare a reduced provenance file for MultiQC
+    # Nextclade output might have different columns depending on the dataset and pathogen
+    df_provenance.rename(columns={"seqName": "sample", "index": "nextclade.index"}, inplace=True)
     df_provenance.to_csv(
         f"{internal_dataset_id}_nextclade_dataset_provenance.tsv", sep="\t", index=False, columns=[
             "sample",
-            "nextclade_index",
-            "nextclade_dataset_tag",
-            "nextclade_dataset_name",
-            "nextclade_dataset_shortcut",
-            "nextclade_dataset_reference_name",
-            "internal_dataset_id",
+            "nextclade.index",
+            "nextclade.dataset.tag",
+            "nextclade.dataset.name",
+            "nextclade.dataset.shortcut",
+            "nextclade.dataset.reference.name",
+            "omnifluss.dataset_id",
         ], 
     )
 
