@@ -23,6 +23,9 @@
                     "help_text": "You will need to create a design file with information about the samples in your experiment before running the pipeline. Use this parameter to specify its location. It has to be a comma-separated file with 3 columns, and a header row.",
                     "fa_icon": "fas fa-file-csv"
                 },
+                "genomes_is_segmented": {
+                    "type": "boolean"
+                },
                 "outdir": {
                     "type": "string",
                     "format": "directory-path",
@@ -99,76 +102,100 @@
             "default": "",
             "properties": {
                 "mapping_flu_h1n1pdm_ha": {
-                    "type": "string"
+                    "type": "string",
+                    "hidden": true
                 },
                 "mapping_flu_h1n1pdm_na": {
-                    "type": "string"
+                    "type": "string",
+                    "hidden": true
                 },
                 "mapping_nextstrain_flu_h1n1pdm_mp": {
-                    "type": "string"
+                    "type": "string",
+                    "hidden": true
                 },
                 "mapping_nextstrain_flu_h1n1pdm_np": {
-                    "type": "string"
+                    "type": "string",
+                    "hidden": true
                 },
                 "mapping_nextstrain_flu_h1n1pdm_ns": {
-                    "type": "string"
+                    "type": "string",
+                    "hidden": true
                 },
                 "mapping_nextstrain_flu_h1n1pdm_pa": {
-                    "type": "string"
+                    "type": "string",
+                    "hidden": true
                 },
                 "mapping_nextstrain_flu_h1n1pdm_pb1": {
-                    "type": "string"
+                    "type": "string",
+                    "hidden": true
                 },
                 "mapping_nextstrain_flu_h1n1pdm_pb2": {
-                    "type": "string"
+                    "type": "string",
+                    "hidden": true
                 },
                 "mapping_flu_h3n2_ha": {
-                    "type": "string"
+                    "type": "string",
+                    "hidden": true
                 },
                 "mapping_flu_h3n2_na": {
-                    "type": "string"
+                    "type": "string",
+                    "hidden": true
                 },
                 "mapping_nextstrain_flu_h3n2_mp": {
-                    "type": "string"
+                    "type": "string",
+                    "hidden": true
                 },
                 "mapping_nextstrain_flu_h3n2_np": {
-                    "type": "string"
+                    "type": "string",
+                    "hidden": true
                 },
                 "mapping_nextstrain_flu_h3n2_ns": {
-                    "type": "string"
+                    "type": "string",
+                    "hidden": true
                 },
                 "mapping_nextstrain_flu_h3n2_pa": {
-                    "type": "string"
+                    "type": "string",
+                    "hidden": true
                 },
                 "mapping_nextstrain_flu_h3n2_pb1": {
-                    "type": "string"
+                    "type": "string",
+                    "hidden": true
                 },
                 "mapping_nextstrain_flu_h3n2_pb2": {
-                    "type": "string"
+                    "type": "string",
+                    "hidden": true
                 },
                 "mapping_flu_vic_ha": {
-                    "type": "string"
+                    "type": "string",
+                    "hidden": true
                 },
                 "mapping_flu_vic_na": {
-                    "type": "string"
+                    "type": "string",
+                    "hidden": true
                 },
                 "mapping_nextstrain_flu_vic_mp": {
-                    "type": "string"
+                    "type": "string",
+                    "hidden": true
                 },
                 "mapping_nextstrain_flu_vic_np": {
-                    "type": "string"
+                    "type": "string",
+                    "hidden": true
                 },
                 "mapping_nextstrain_flu_vic_ns": {
-                    "type": "string"
+                    "type": "string",
+                    "hidden": true
                 },
                 "mapping_nextstrain_flu_vic_pa": {
-                    "type": "string"
+                    "type": "string",
+                    "hidden": true
                 },
                 "mapping_nextstrain_flu_vic_pb1": {
-                    "type": "string"
+                    "type": "string",
+                    "hidden": true
                 },
                 "mapping_nextstrain_flu_vic_pb2": {
-                    "type": "string"
+                    "type": "string",
+                    "hidden": true
                 },
                 "dataset_H1N1_HA": {
                     "type": "string"
@@ -251,10 +278,12 @@
             "default": "",
             "properties": {
                 "mapping_rsv_a": {
-                    "type": "string"
+                    "type": "string",
+                    "hidden": true
                 },
                 "mapping_rsv_b": {
-                    "type": "string"
+                    "type": "string",
+                    "hidden": true
                 },
                 "dataset_RSV_A": {
                     "type": "string"
