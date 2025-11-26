@@ -29,7 +29,8 @@ process NEXTCLADE_DATASET_PROVENANCE {
 
     stub:
     """
-    mkdir nextstrain
+    touch "${meta.id}_nextclade_dataset_provenance.tsv"
+    touch "${meta.id}_with_dataset_provenance.tsv"
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
