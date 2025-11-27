@@ -1,0 +1,51 @@
+{
+    "stub run": {
+        "content": [
+            {
+                "0": [
+                    [
+                        {
+                            "id": "test"
+                        },
+                        "test_nextclade_dataset_provenance.tsv:md5,d41d8cd98f00b204e9800998ecf8427e"
+                    ]
+                ],
+                "1": [
+                    [
+                        {
+                            "id": "test"
+                        },
+                        "test_with_dataset_provenance.tsv:md5,d41d8cd98f00b204e9800998ecf8427e"
+                    ]
+                ],
+                "2": [
+                    "versions.yml:md5,1326159d9a377b67664da9106b21227d"
+                ],
+                "mqc_dataset_provenance": [
+                    [
+                        {
+                            "id": "test"
+                        },
+                        "test_nextclade_dataset_provenance.tsv:md5,d41d8cd98f00b204e9800998ecf8427e"
+                    ]
+                ],
+                "nextclade_with_dataset_provenance": [
+                    [
+                        {
+                            "id": "test"
+                        },
+                        "test_with_dataset_provenance.tsv:md5,d41d8cd98f00b204e9800998ecf8427e"
+                    ]
+                ],
+                "versions": [
+                    "versions.yml:md5,1326159d9a377b67664da9106b21227d"
+                ]
+            }
+        ],
+        "meta": {
+            "nf-test": "0.9.3",
+            "nextflow": "25.10.0"
+        },
+        "timestamp": "2025-11-27T16:30:28.430726627"
+    }
+}
