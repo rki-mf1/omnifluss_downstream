@@ -47,5 +47,54 @@
             "nextflow": "25.10.0"
         },
         "timestamp": "2025-11-27T16:30:28.430726627"
+    },
+    "sarscov2 default": {
+        "content": [
+            {
+                "0": [
+                    [
+                        {
+                            "id": "test"
+                        },
+                        "test_nextclade_dataset_provenance.tsv:md5,f30e569f28cb9cd877264b875d110ac4"
+                    ]
+                ],
+                "1": [
+                    [
+                        {
+                            "id": "test"
+                        },
+                        "test_with_dataset_provenance.tsv:md5,1788836f4381e5469b70b0439518e896"
+                    ]
+                ],
+                "2": [
+                    "versions.yml:md5,1326159d9a377b67664da9106b21227d"
+                ],
+                "mqc_dataset_provenance": [
+                    [
+                        {
+                            "id": "test"
+                        },
+                        "test_nextclade_dataset_provenance.tsv:md5,f30e569f28cb9cd877264b875d110ac4"
+                    ]
+                ],
+                "nextclade_with_dataset_provenance": [
+                    [
+                        {
+                            "id": "test"
+                        },
+                        "test_with_dataset_provenance.tsv:md5,1788836f4381e5469b70b0439518e896"
+                    ]
+                ],
+                "versions": [
+                    "versions.yml:md5,1326159d9a377b67664da9106b21227d"
+                ]
+            }
+        ],
+        "meta": {
+            "nf-test": "0.9.3",
+            "nextflow": "25.10.0"
+        },
+        "timestamp": "2025-11-28T14:56:36.392019156"
     }
 }
