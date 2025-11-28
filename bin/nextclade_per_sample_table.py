@@ -30,7 +30,7 @@ def main():
                 "seqName",
                 "clade",
                 "qc.overallStatus",
-                "nextclade_dataset_name",
+                "nextclade.dataset.name",
             ]
         ]
         df = pd.concat([df, df_part], ignore_index=True)
@@ -38,6 +38,7 @@ def main():
     # Find rows corresponding to each sample
     # seqName contains a common fasta header prefix for segmented genomes
     # We match based on that
+    # sample_tables = []
     for sample in samples:
         df_sample = df[df["seqName"].str.startswith(sample)]
         if not df_sample.empty:
@@ -45,51 +46,59 @@ def main():
             if args.is_influenza:
                 # Add a new column with the reference clade extracted from seqName
                 # TODO: this is header-specific, may need to be adapted for other data
-                df_sample.loc[:, "reference_clade"] = (
+                df_sample.loc[:, "omnifluss.reference.clade"] = (
                     df_sample["seqName"].str.split("|").str[-2].str.split("_").str[-1]
                 )
-                all_refs = df_sample["nextclade_dataset_name"].to_list()
+                all_refs = df_sample["nextclade.dataset.name"].to_list()
                 print(all_refs)
                 # Influenza B
                 if all(ref.startswith("Influenza B") for ref in all_refs):
                     # check is all references are "Influenza B Victoria"
                     if all("Vic" in ref for ref in all_refs):
-                        df_sample.loc[:, "potential_reassortant"] = False
+                        df_sample.loc[:, "omnifluss.potential_reassortant"] = False
                     # check is all references are "Influenza B Yamagata"
                     elif all("Yam" in ref for ref in all_refs):
-                        df_sample.loc[:, "potential_reassortant"] = False
+                        df_sample.loc[:, "omnifluss.potential_reassortant"] = False
                     else:
-                        df_sample.loc[:, "potential_reassortant"] = True
+                        df_sample.loc[:, "omnifluss.potential_reassortant"] = True
                 # Influenza A
                 elif all(ref.startswith("Influenza A") for ref in all_refs):
                     # check if all subtypes are the same
                     subtypes = [ref.split(" ")[2] for ref in all_refs]
                     if len(set(subtypes)) == 1:
-                        df_sample.loc[:, "potential_reassortant"] = False
+                        df_sample.loc[:, "omnifluss.potential_reassortant"] = False
                     else:
-                        df_sample.loc[:, "potential_reassortant"] = True
+                        df_sample.loc[:, "omnifluss.potential_reassortant"] = True
                 else:
-                    df_sample.loc[:, "potential_reassortant"] = True
+                    df_sample.loc[:, "omnifluss.potential_reassortant"] = True
             else:
-                df_sample.loc[:, "reference_clade"] = "n/a"
-                df_sample.loc[:, "potential_reassortant"] = "n/a"
+                df_sample.loc[:, "omnifluss.reference.clade"] = "n/a"
+                df_sample.loc[:, "omnifluss.potential_reassortant"] = "n/a"
         else:
             df_sample.loc[0] = ["n/a", "n/a", "n/a", "n/a"]
             df_sample.loc[:, "sample"] = sample
-            df_sample.loc[:, "reference_clade"] = "n/a"
-            df_sample.loc[:, "potential_reassortant"] = "n/a"
+            df_sample.loc[:, "seqName"] = sample
+            df_sample.loc[:, "omnifluss.reference.clade"] = "n/a"
+            df_sample.loc[:, "omnifluss.potential_reassortant"] = "n/a"
         # Reorder columns
+        # sample cannot be first column due to MultiQC
+        # MultiQC needs unique values in the first column
         df_sample = df_sample[
             [
-                "sample",
                 "seqName",
-                "reference_clade",
-                "nextclade_dataset_name",
-                "potential_reassortant",
+                "sample",
+                "omnifluss.reference.clade",
+                "nextclade.dataset.name",
+                "omnifluss.potential_reassortant",
                 "clade",
                 "qc.overallStatus",
             ]
         ]
+        df_sample = df_sample.rename(columns={
+            "seqName": "nextclade.seqName",
+            "clade": "nextclade.clade",
+            "qc.overallStatus": "nextclade.qc.overallStatus",
+        })
         df_sample.to_csv(f"{sample}_types_per_sample.tsv", sep="\t", index=False)
 
 
