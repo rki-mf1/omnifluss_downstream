@@ -1,0 +1,47 @@
+name: nextclade_dataset_provenance
+description: Module to retrieve dataset provenance information for Nextclade datasets
+author:
+  - "@MarieLataretu"
+keywords:
+  - nextclade
+  - dataset
+  - provenance
+inputs:
+  - - meta:
+      type: map
+      description: |
+        Groovy Map containing sample information
+        e.g. [ id:'test' ]
+    - dataset_pathogen_json:
+        type: file
+        description: Path to the pathogen.json file from the Nextclade dataset
+        pattern: "*pathogen.json"
+    - nextclade_csv:
+        type: file
+        description: Path to the Nextclade CSV results file
+        pattern: "*.{csv}"
+outputs:
+  mqc_dataset_provenance:
+    - - meta:
+          type: map
+          description: |
+            Groovy Map containing sample information
+            e.g. [ id:'test' ]
+      - ${prefix}_nextclade_dataset_provenance.tsv:
+        type: file
+        description: TSV file containing the dataset provenance information for use in MultiQC
+        pattern: "*_mqc_dataset_provenance.tsv"
+  nextclade_with_dataset_provenance:
+    - - meta:
+          type: map
+          description: |
+            Groovy Map containing sample information
+            e.g. [ id:'test' ]
+      - ${prefix}_with_dataset_provenance.tsv:
+        type: file
+        description: TSV file containing Nextclade results with appended dataset provenance information
+        pattern: "*_with_dataset_provenance.tsv"
+  versions.yml:
+    type: file
+    description: YAML file containing version information of the Nextclade dataset
+    pattern: "*.versions.yml"

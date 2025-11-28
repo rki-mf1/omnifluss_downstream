@@ -1,0 +1,18 @@
+Changes in component 'nf-core/nextclade/run'
+'modules/nf-core/nextclade/run/environment.yml' is unchanged
+Changes in 'nextclade/run/main.nf':
+--- modules/nf-core/nextclade/run/main.nf
++++ modules/nf-core/nextclade/run/main.nf
+@@ -22,6 +22,7 @@
+     tuple val(meta), path("${prefix}.aligned.fasta") , optional:true, emit: fasta_aligned
+     tuple val(meta), path("*_translation.*.fasta")   , optional:true, emit: fasta_translation
+     tuple val(meta), path("${prefix}.nwk")           , optional:true, emit: nwk
++    tuple val(meta), path("${dataset}/pathogen.json"), optional:true, emit: dataset_pathogen_json
+     path "versions.yml"                              , emit: versions
+ 
+     when:
+
+'modules/nf-core/nextclade/run/meta.yml' is unchanged
+'modules/nf-core/nextclade/run/tests/main.nf.test' is unchanged
+'modules/nf-core/nextclade/run/tests/main.nf.test.snap' is unchanged
+************************************************************

@@ -7,6 +7,7 @@ include { NEXTCLADE_SORT } from '../modules/local/nextclade_sort/main'
 include { NEXTCLADE_DATASETGET } from '../modules/nf-core/nextclade/datasetget/main'
 include { NEXTCLADE_RUN } from '../modules/nf-core/nextclade/run/main'
 include { NEXTCLADE_POSTPROCESSING } from '../modules/local/nextclade_postprocessing/main'
+include { NEXTCLADE_DATASET_PROVENANCE } from '../modules/local/nextclade_dataset_provenance/main'
 include { MULTIQC } from '../modules/nf-core/multiqc/main'
 include { paramsSummaryMap } from 'plugin/nf-schema'
 include { paramsSummaryMultiqc } from '../subworkflows/nf-core/utils_nfcore_pipeline'
@@ -37,7 +38,7 @@ workflow OMNIFLUSS_DOWNSTREAM {
     // Automatically deposit consensus sequences into species and clade subfolders 
     //
     NEXTCLADE_SORT(ch_nextclade_sort_input)
-    ch_versions.mix(NEXTCLADE_SORT.out.versions)
+    ch_versions = ch_versions.mix(NEXTCLADE_SORT.out.versions)
 
     // channel: "path/to/nextstrain"
     ch_nextclade_sort = NEXTCLADE_SORT.out.sort_directory
@@ -68,6 +69,8 @@ workflow OMNIFLUSS_DOWNSTREAM {
             ch_nextclade_datasetget_input,
             "",
         )
+        ch_versions = ch_versions.mix(NEXTCLADE_DATASETGET.out.versions)
+
 
         // channel: [[id:tag], path/to/nextclade_reference_set]
         ch_dataset = NEXTCLADE_DATASETGET.out.dataset.map { dataset ->
@@ -107,8 +110,19 @@ workflow OMNIFLUSS_DOWNSTREAM {
         ch_nextclade_run_input,
         ch_dataset,
     )
-
+    ch_versions = ch_versions.mix(NEXTCLADE_RUN.out.versions)
     ch_multiqc_files = ch_multiqc_files.mix(NEXTCLADE_RUN.out.csv.map { meta, csv -> csv }.collect())
+
+    //
+    // NEXTCLADE_DATASET_PROVENANCE
+    // Extract dataset version information from nextclade dataset json and nextclade csv output
+    // Combined information from the nextclade dataset json that was run on the respective sequences
+    //
+    NEXTCLADE_DATASET_PROVENANCE(
+        NEXTCLADE_RUN.out.dataset_pathogen_json.join(NEXTCLADE_RUN.out.csv)
+    )
+    ch_versions = ch_versions.mix(NEXTCLADE_DATASET_PROVENANCE.out.versions)
+    ch_multiqc_files = ch_multiqc_files.mix(NEXTCLADE_DATASET_PROVENANCE.out.mqc_dataset_provenance.map { _meta, provenance -> provenance }.collect())
 
     //
     // NEXTCLADE_POSTPROCESSING
@@ -117,7 +131,8 @@ workflow OMNIFLUSS_DOWNSTREAM {
     NEXTCLADE_POSTPROCESSING(
         NEXTCLADE_RUN.out.csv
     )
-    ch_versions.mix(NEXTCLADE_POSTPROCESSING.out.versions)
+    ch_versions = ch_versions.mix(NEXTCLADE_POSTPROCESSING.out.versions)
+
 
     //
     // Collate and save software versions
