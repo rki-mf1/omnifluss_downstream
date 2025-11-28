@@ -50,7 +50,6 @@ def main():
                     df_sample["seqName"].str.split("|").str[-2].str.split("_").str[-1]
                 )
                 all_refs = df_sample["nextclade.dataset.name"].to_list()
-                print(all_refs)
                 # Influenza B
                 if all(ref.startswith("Influenza B") for ref in all_refs):
                     # check is all references are "Influenza B Victoria"
