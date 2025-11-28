@@ -112,7 +112,6 @@ workflow OMNIFLUSS_DOWNSTREAM {
         ch_dataset,
     )
     ch_versions = ch_versions.mix(NEXTCLADE_RUN.out.versions)
-    ch_multiqc_files = ch_multiqc_files.mix(NEXTCLADE_RUN.out.csv.map { meta, csv -> csv }.collect())
 
     //
     // NEXTCLADE_DATASET_PROVENANCE
@@ -144,6 +143,7 @@ workflow OMNIFLUSS_DOWNSTREAM {
             workflow.profile.contains('INV'),
         )
         ch_versions = ch_versions.mix(NEXTCLADE_PER_SAMPLE_TABLE.out.versions)
+        ch_multiqc_files = ch_multiqc_files.mix(NEXTCLADE_PER_SAMPLE_TABLE.out.per_sample_table.collect())
     }
 
     //

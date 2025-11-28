@@ -27,6 +27,7 @@ def append_versions_to_nextclade_output(nextclade_csv, dataset):
     df["nextclade.dataset.reference.name"] = dataset["reference name"]
     return df
 
+
 def main():
     parser = argparse.ArgumentParser()
 
@@ -51,17 +52,33 @@ def main():
     )
     # Prepare a reduced provenance file for MultiQC
     # Nextclade output might have different columns depending on the dataset and pathogen
-    df_provenance.rename(columns={"seqName": "sample", "index": "nextclade.index"}, inplace=True)
-    df_provenance.to_csv(
-        f"{internal_dataset_id}_nextclade_dataset_provenance.tsv", sep="\t", index=False, columns=[
-            "sample",
-            "nextclade.index",
+    df_provenance_mqc = df_provenance[
+        [
+            "seqName",
+            "index",
+            "clade",
+            "qc.overallStatus",
+            "qc.missingData.status",
+            "qc.mixedSites.status",
             "nextclade.dataset.tag",
             "nextclade.dataset.name",
             "nextclade.dataset.shortcut",
             "nextclade.dataset.reference.name",
-            "omnifluss.dataset_id",
-        ], 
+        ]
+    ].copy()
+    df_provenance_mqc.rename(
+        columns={
+            "seqName": "sample",
+            "index": "nextclade.index",
+            "clade": "nextclade.clade",
+            "qc.overallStatus": "nextclade.qc.overallStatus",
+            "qc.missingData.status": "nextclade.qc.missingData.status",
+            "qc.mixedSites.status": "nextclade.qc.mixedSites.status",
+        },
+        inplace=True,
+    )
+    df_provenance_mqc.to_csv(
+        f"{internal_dataset_id}_nextclade_dataset_provenance.tsv", sep="\t", index=False
     )
 
 
