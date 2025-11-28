@@ -10,14 +10,15 @@ process NEXTCLADE_DATASET_PROVENANCE {
     tuple val(meta), path(dataset_pathogen_json), path(nextclade_csv)
 
     output:
-    tuple val(meta), path("${meta.id}_nextclade_dataset_provenance.tsv"), emit: mqc_dataset_provenance
-    tuple val(meta), path("${meta.id}_with_dataset_provenance.tsv"), emit: nextclade_with_dataset_provenance
+    tuple val(meta), path("${prefix}_nextclade_dataset_provenance.tsv"), emit: mqc_dataset_provenance
+    tuple val(meta), path("${prefix}_with_dataset_provenance.tsv"), emit: nextclade_with_dataset_provenance
     path "versions.yml", emit: versions
 
     script:
+    prefix = task.ext.prefix ?: "${meta.id}"
     """
     nextclade_dataset_provenance.py \
-        --meta '${meta.id}' \
+        --meta ${prefix} \
         --nextclade_csv ${nextclade_csv} \
         --json ${dataset_pathogen_json}
 
@@ -28,8 +29,10 @@ process NEXTCLADE_DATASET_PROVENANCE {
     """
 
     stub:
+    prefix = task.ext.prefix ?: "${meta.id}"
     """
-    mkdir nextstrain
+    touch "${prefix}_nextclade_dataset_provenance.tsv"
+    touch "${prefix}_with_dataset_provenance.tsv"
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
