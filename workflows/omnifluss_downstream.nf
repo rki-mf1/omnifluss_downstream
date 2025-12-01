@@ -8,6 +8,7 @@ include { NEXTCLADE_DATASETGET } from '../modules/nf-core/nextclade/datasetget/m
 include { NEXTCLADE_RUN } from '../modules/nf-core/nextclade/run/main'
 include { NEXTCLADE_POSTPROCESSING } from '../modules/local/nextclade_postprocessing/main'
 include { NEXTCLADE_DATASET_PROVENANCE } from '../modules/local/nextclade_dataset_provenance/main'
+include { NEXTCLADE_PER_SAMPLE_TABLE } from '../modules/local/nextclade_per_sample_table/main'
 include { MULTIQC } from '../modules/nf-core/multiqc/main'
 include { paramsSummaryMap } from 'plugin/nf-schema'
 include { paramsSummaryMultiqc } from '../subworkflows/nf-core/utils_nfcore_pipeline'
@@ -111,7 +112,6 @@ workflow OMNIFLUSS_DOWNSTREAM {
         ch_dataset,
     )
     ch_versions = ch_versions.mix(NEXTCLADE_RUN.out.versions)
-    ch_multiqc_files = ch_multiqc_files.mix(NEXTCLADE_RUN.out.csv.map { meta, csv -> csv }.collect())
 
     //
     // NEXTCLADE_DATASET_PROVENANCE
@@ -133,6 +133,18 @@ workflow OMNIFLUSS_DOWNSTREAM {
     )
     ch_versions = ch_versions.mix(NEXTCLADE_POSTPROCESSING.out.versions)
 
+    //
+    // If segmented, collect Nextclade results with dataset provenance per-sample
+    //
+    if (params.genomes_is_segmented) {
+        NEXTCLADE_PER_SAMPLE_TABLE(
+            ch_samplesheet.map { meta, _path -> meta.id }.collect(),
+            NEXTCLADE_DATASET_PROVENANCE.out.nextclade_with_dataset_provenance.map { _meta, path -> path }.collect(),
+            workflow.profile.contains('INV'),
+        )
+        ch_versions = ch_versions.mix(NEXTCLADE_PER_SAMPLE_TABLE.out.versions)
+        ch_multiqc_files = ch_multiqc_files.mix(NEXTCLADE_PER_SAMPLE_TABLE.out.per_sample_table.collect())
+    }
 
     //
     // Collate and save software versions
