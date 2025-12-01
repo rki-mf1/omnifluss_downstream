@@ -31,7 +31,10 @@ process NEXTCLADE_PER_SAMPLE_TABLE {
 
     stub:
     """
-    mkdir nextstrain
+    touch sample1_types_per_sample.tsv
+    touch sample2_types_per_sample.tsv
+    touch sample3_types_per_sample.tsv
+    touch sample4_types_per_sample.tsv
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
