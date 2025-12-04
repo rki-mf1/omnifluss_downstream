@@ -268,6 +268,18 @@
                 },
                 "dataset_H0N0_PB2": {
                     "type": "string"
+                },
+                "mapping_community_moncla_lab_iav_h5_ha_all_clades": {
+                    "type": "string",
+                    "hidden": true
+                },
+                "mapping_community_moncla_lab_iav_h5_ha_2_3_2_1": {
+                    "type": "string",
+                    "hidden": true
+                },
+                "mapping_community_moncla_lab_iav_h5_ha_2_3_4_4": {
+                    "type": "string",
+                    "hidden": true
                 }
             }
         },
