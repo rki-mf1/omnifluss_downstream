@@ -1,4 +1,5 @@
 process NEXTCLADE_DATASET_PROVENANCE {
+    tag "$meta.id"
     label 'process_single'
 
     conda "${moduleDir}/environment.yml"

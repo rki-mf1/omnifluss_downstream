@@ -104,9 +104,9 @@ custom_data:
         title: 'Nextclade Dataset Name'
         description: 'Full name of the Nextclade dataset used'
         scale: false  # Treat as string
-      omnifluss.potential_reassortant:
-        title: 'Potential Reassortant'
-        description: 'Indicates if the sample is a potential reassortant (True/False)'
+      omnifluss.mixed_types:
+        title: 'Mixed Types'
+        description: 'Indicates if the sample contains different types across segments (True/False) based on Nextclade dataset names'
       nextclade.clade:
         title: 'Clade'
         description: 'Clade assigned by Nextclade analysis'
