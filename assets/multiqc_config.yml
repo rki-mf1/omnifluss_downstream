@@ -98,7 +98,7 @@ custom_data:
           scale: false  # Treat as string
       omnifluss.reference.clade:
         title: 'Reference Type'
-        description: 'Reference type extracted from genome-reconstruction reference sequence name'
+        description: 'Inferred reference type from the input FASTA header (pattern: H\dN\d)'
         scale: false  # Treat as string
       nextclade.dataset.name:
         title: 'Nextclade Dataset Name'
