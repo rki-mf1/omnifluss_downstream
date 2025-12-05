@@ -19,7 +19,7 @@ def find_influenza_type(string):
     matches = re.findall(pattern, string)
     
     if len(matches) != 1:
-        "n/a"
+        return "n/a"
     else:
         return matches[0]
 
