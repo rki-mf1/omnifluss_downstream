@@ -75,10 +75,11 @@ workflow OMNIFLUSS_DOWNSTREAM {
 
         // channel: [[id:tag], path/to/nextclade_reference_set]
         ch_dataset = NEXTCLADE_DATASETGET.out.dataset.map { dataset ->
-            def dir_name = dataset.getBaseName()
-            [[id: params["mapping_" + dir_name]], dataset]
+            def dir_name = dataset.getName()
+            // replace all point since they cannot be part of parameter names
+            def dir_name_clean = dir_name.replaceAll('\\.', '_')
+            [[id: params["mapping_" + dir_name_clean]], dataset]
         }
-
 
         // join samples and datasets
         ch_tmp_join = ch_nextclade_run_input.join(ch_dataset)

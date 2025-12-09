@@ -10,12 +10,12 @@ process NEXTCLADE_SORT {
     path(fastas)
 
     output:
-    path "nextstrain/", emit: sort_directory
+    path "nextclade_sort/", emit: sort_directory
     path "versions.yml", emit: versions
 
     script:
     """
-    nextclade sort $fastas --output-dir .
+    nextclade sort $fastas --output-dir nextclade_sort/
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
