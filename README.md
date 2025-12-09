@@ -4,21 +4,13 @@
 
 **rki-mf1/omnifluss_downstream** is a bioinformatics pipeline that ...
 
-<!-- TODO nf-core:
-   Complete this sentence with a 2-3 sentence summary of what types of data the pipeline ingests, a brief overview of the
-   major pipeline sections and the types of output it produces. You're giving an overview to someone new
-   to nf-core here, in 15-20 seconds. For an example, see https://github.com/nf-core/rnaseq/blob/master/README.md#introduction
--->
-
-<!-- TODO nf-core: Include a figure that guides the user through the major workflow steps. Many nf-core
-     workflows use the "tube map" design for that. See https://nf-co.re/docs/guidelines/graphic_design/workflow_diagrams#examples for examples.   -->
 
 1. Assign to each single fasta sequence a Nextclade dataset ([`nextcalde sort`](https://github.com/nextstrain/nextclade))
 2. Clade/lineage assignment, mutation calling and sequence quality checks ([`nextcalde run`](https://github.com/nextstrain/nextclade))
    1. Add Nextclade dataset version information for each fasta file
 3. Summarize results ([`MultiQC`](http://multiqc.info/))
 
-... for SARS-CoV-2, influenza virus (influenza A H1N1 and H3N2, influenza B Victoria), measles virus and respiratory syncytial virus (RSV).
+... for SARS-CoV-2, influenza virus (A/H1N1, A/H3N2, A/H5Nx and B/Victoria), measles virus and respiratory syncytial virus (RSV).
 
 By default, the latest available Nextclade dataset will be used for the respective sequences.
 
@@ -33,7 +25,7 @@ First, prepare a samplesheet with your input data that looks as follows:
 
 ```csv
 sample,fasta
-AEG588A1,AEG588A1_S1_L002_R1_001.fasta
+AEG588A1,/path/to/fasta./AEG588A1.fasta
 ```
 
 Each row represents a single or multi fasta file.
