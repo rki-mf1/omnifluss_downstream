@@ -98,15 +98,15 @@ custom_data:
           scale: false  # Treat as string
       omnifluss.reference.clade:
         title: 'Reference Type'
-        description: 'Reference type extracted from genome-reconstruction reference sequence name'
+        description: 'Inferred reference type from the input FASTA header (pattern: H\dN\d)'
         scale: false  # Treat as string
       nextclade.dataset.name:
         title: 'Nextclade Dataset Name'
         description: 'Full name of the Nextclade dataset used'
         scale: false  # Treat as string
-      omnifluss.potential_reassortant:
-        title: 'Potential Reassortant'
-        description: 'Indicates if the sample is a potential reassortant (True/False)'
+      omnifluss.mixed_types:
+        title: 'Mixed Types'
+        description: 'Indicates if the sample contains different types across segments (True/False) based on Nextclade dataset names'
       nextclade.clade:
         title: 'Clade'
         description: 'Clade assigned by Nextclade analysis'
