@@ -25,7 +25,7 @@ First, prepare a samplesheet with your input data that looks as follows:
 
 ```csv
 sample,fasta
-AEG588A1,/path/to/fasta./AEG588A1.fasta
+AEG588A1,/path/to/fasta/AEG588A1.fasta
 ```
 
 Each row represents a single or multi fasta file.
