@@ -1,0 +1,26 @@
+name: nextclade_per_sample_table
+description: Module to summarize clade information per sample if the pathogen is segmented
+author:
+  - "@MarieLataretu"
+keywords:
+  - nextclade
+  - summary
+inputs:
+  - samplenames:
+    type: string
+    description: All sample names as defined in the input sample sheet, assuming that the fasta headers of one sample start with the sample name
+  - nextclade_with_dataset_provenance:
+    type: file
+    description: All Nextclade outputs together with the dataset provenance information
+  - is_influenza:
+    type: boolean
+    description: Flag if the input samples are influenza
+outputs:
+  per_sample_table:
+    type: file
+    description: Per sample summary including clade and QC information. If is_influenza, then potential reassortments are reported.
+    pattern: "*_types_per_sample.tsv"
+  versions.yml:
+    type: file
+    description: YAML file containing version information of the Nextclade dataset
+    pattern: "*.versions.yml"

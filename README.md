@@ -4,36 +4,35 @@
 
 **rki-mf1/omnifluss_downstream** is a bioinformatics pipeline that ...
 
-<!-- TODO nf-core:
-   Complete this sentence with a 2-3 sentence summary of what types of data the pipeline ingests, a brief overview of the
-   major pipeline sections and the types of output it produces. You're giving an overview to someone new
-   to nf-core here, in 15-20 seconds. For an example, see https://github.com/nf-core/rnaseq/blob/master/README.md#introduction
--->
 
-<!-- TODO nf-core: Include a figure that guides the user through the major workflow steps. Many nf-core
-     workflows use the "tube map" design for that. See https://nf-co.re/docs/guidelines/graphic_design/workflow_diagrams#examples for examples.   -->
-<!-- TODO nf-core: Fill in short bullet-pointed list of the default steps in the pipeline -->2. Present QC for raw reads ([`MultiQC`](http://multiqc.info/))
+1. Assign to each single fasta sequence a Nextclade dataset ([`nextcalde sort`](https://github.com/nextstrain/nextclade))
+2. Clade/lineage assignment, mutation calling and sequence quality checks ([`nextcalde run`](https://github.com/nextstrain/nextclade))
+   1. Add Nextclade dataset version information for each fasta file
+3. Summarize results ([`MultiQC`](http://multiqc.info/))
+
+... for SARS-CoV-2, influenza virus (A/H1N1, A/H3N2, A/H5Nx and B/Victoria), measles virus and respiratory syncytial virus (RSV).
+
+By default, the latest available Nextclade dataset will be used for the respective sequences.
 
 ## Usage
 
 > [!NOTE]
 > If you are new to Nextflow and nf-core, please refer to [this page](https://nf-co.re/docs/usage/installation) on how to set-up Nextflow. Make sure to [test your setup](https://nf-co.re/docs/usage/introduction#how-to-run-a-pipeline) with `-profile test` before running the workflow on actual data.
 
-<!-- TODO nf-core: Describe the minimum required steps to execute the pipeline, e.g. how to prepare samplesheets.
-     Explain what rows and columns represent. For instance (please edit as appropriate):
-
 First, prepare a samplesheet with your input data that looks as follows:
 
 `samplesheet.csv`:
 
 ```csv
-sample,fastq_1,fastq_2
-CONTROL_REP1,AEG588A1_S1_L002_R1_001.fastq.gz,AEG588A1_S1_L002_R2_001.fastq.gz
+sample,fasta
+AEG588A1,/path/to/fasta/AEG588A1.fasta
 ```
 
-Each row represents a fastq file (single-end) or a pair of fastq files (paired end).
+Each row represents a single or multi fasta file.
 
--->
+> [!NOTE]
+> For segmented genomes (currently influenza, `-profile INV`), each line should represent one sample, thus a multi fasta file with all segments of a sample.
+
 
 Now, you can run the pipeline using:
 
@@ -41,21 +40,32 @@ Now, you can run the pipeline using:
 
 ```bash
 nextflow run rki-mf1/omnifluss_downstream \
-   -profile <docker/singularity/.../institute> \
+   -profile <docker/singularity/.../institute/PATHOGEN> \
    --input samplesheet.csv \
    --outdir <OUTDIR>
 ```
+
+Currently supported pathogen profiles are:
+
+| Profile name | Pathogen                    |
+| ------------ | --------------------------- |
+| CVD          | SARS-CoV-2                  |
+| INV          | Influenza virus             |
+| MSV          | Measles virus               |
+| RSV          | Respiratory syncytial virus |
+
 
 > [!WARNING]
 > Please provide pipeline parameters via the CLI or Nextflow `-params-file` option. Custom config files including those provided by the `-c` Nextflow option can be used to provide any configuration _**except for parameters**_; see [docs](https://nf-co.re/docs/usage/getting_started/configuration#custom-configuration-files).
 
 ## Credits
 
-rki-mf1/omnifluss_downstream was originally written by DimitriTernovoj.
+rki-mf1/omnifluss_downstream was originally written by [Dimitri Ternovoj](https://github.com/DimitriTernovoj).
 
 We thank the following people for their extensive assistance in the development of this pipeline:
 
-<!-- TODO nf-core: If applicable, make list of people who have also contributed -->
+- [Marie Lataretu](https://github.com/MarieLataretu/)
+- [Thomas Krannich](https://github.com/Krannich479)
 
 ## Contributions and Support
 
