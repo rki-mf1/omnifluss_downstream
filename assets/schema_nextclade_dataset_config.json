@@ -1,0 +1,36 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://raw.githubusercontent.com/rki-mf1/omnifluss_downstream/main/assets/schema_input.json",
+    "title": "rki-mf1/omnifluss_downstream pipeline - params.nextclade_dataset_config schema",
+    "description": "Schema for the file provided with params.nextclade_dataset_config",
+    "type": "array",
+    "items": {
+        "type": "object",
+        "properties": {
+            "dataset_short_name": {
+                "type": "string",
+                "pattern": "^\\S+$",
+                "errorMessage": "A short dataset name must be provided and cannot contain spaces",
+                "meta": ["id"]
+            },
+            "nextclade_sort_extensions": {
+                "type": "string",
+                "pattern": "^\\S+$",
+                "errorMessage": "The nextclade sort result path must be provided and cannot contain spaces"
+            },
+            "nextclade_dataset_name": {
+                "type": "string",
+                "pattern": "^\\S+$",
+                "errorMessage": "The dataset name must be provided and cannot contain spaces",
+                "meta": ["dataset_name"]
+            },
+            "nextclade_dataset_tag": {
+                "type": "string",
+                "pattern": "^\\S+$",
+                "errorMessage": "The dataset tag must be provided and cannot contain spaces",
+                "meta": ["dataset_tag"]
+            }
+        },
+        "required": ["dataset_short_name", "nextclade_sort_extensions", "nextclade_dataset_name", "nextclade_dataset_tag"]
+    }
+}

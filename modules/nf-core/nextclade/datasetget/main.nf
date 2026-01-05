@@ -8,11 +8,11 @@ process NEXTCLADE_DATASETGET {
         'community.wave.seqera.io/library/nextclade:3.11.0--155203da8341cfe6' }"
 
     input:
-    val dataset
+    tuple val(meta), val(dataset)
     val tag
 
     output:
-    path "$prefix"     , emit: dataset
+    tuple val(meta), path("$prefix")     , emit: dataset
     path "versions.yml", emit: versions
 
     when:
