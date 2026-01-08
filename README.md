@@ -4,7 +4,6 @@
 
 **rki-mf1/omnifluss_downstream** is a bioinformatics pipeline that ...
 
-
 1. Assign to each single fasta sequence a Nextclade dataset ([`nextcalde sort`](https://github.com/nextstrain/nextclade))
 2. Clade/lineage assignment, mutation calling and sequence quality checks ([`nextcalde run`](https://github.com/nextstrain/nextclade))
    1. Add Nextclade dataset version information for each fasta file
@@ -33,7 +32,6 @@ Each row represents a single or multi fasta file.
 > [!NOTE]
 > For segmented genomes (currently influenza, `-profile INV`), each line should represent one sample, thus a multi fasta file with all segments of a sample.
 
-
 Now, you can run the pipeline using:
 
 <!-- TODO nf-core: update the following command to include all required parameters for a minimal example -->
@@ -54,17 +52,34 @@ Currently supported pathogen profiles are:
 | MSV          | Measles virus               |
 | RSV          | Respiratory syncytial virus |
 
+For more details on the available parameters, please see the output of:
+
+```bash
+nextflow run rki-mf1/omnifluss_downstream --help
+```
 
 > [!WARNING]
 > Please provide pipeline parameters via the CLI or Nextflow `-params-file` option. Custom config files including those provided by the `-c` Nextflow option can be used to provide any configuration _**except for parameters**_; see [docs](https://nf-co.re/docs/usage/getting_started/configuration#custom-configuration-files).
 
+### Nextclade dataset specification
+
+The pipeline utilizes different Nextclade datasets for each pathogen in one pipeline run. The Nextclade datasets and dataset versions are specified CSV files locate `assets/<PATHOGEN>_nextclade_dataset_config.csv`:
+
+```csv
+dataset_short_name,nextclade_sort_extensions,nextclade_dataset_name,nextclade_dataset_tag
+SC2,nextstrain/sars-cov-2/sequences.fasta,sars-cov-2,2025-12-05--10-40-14Z
+```
+
+By default, the latest available Nextclade dataset will be used for the respective sequences, except for influenza virus (`-profile INV`), where a the dataset version is fixed for the season.
+
+To specify a custom Nextclade dataset version for a pathogen, you can provide your own CSV file via the `--nextclade_dataset_config` parameter. The custom CSV file must follow the same format as described above.
+
 ## Credits
 
-rki-mf1/omnifluss_downstream was originally written by [Dimitri Ternovoj](https://github.com/DimitriTernovoj).
+rki-mf1/omnifluss_downstream was originally written by [Dimitri Ternovoj](https://github.com/DimitriTernovoj) and is currently developed and maintained by [Marie Lataretu](https://github.com/MarieLataretu/).
 
 We thank the following people for their extensive assistance in the development of this pipeline:
 
-- [Marie Lataretu](https://github.com/MarieLataretu/)
 - [Thomas Krannich](https://github.com/Krannich479)
 
 ## Contributions and Support
