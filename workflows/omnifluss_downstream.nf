@@ -3,7 +3,6 @@
     IMPORT MODULES / SUBWORKFLOWS / FUNCTIONS
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
-include { samplesheetToList } from 'plugin/nf-schema'
 include { NEXTCLADE_SORT } from '../modules/local/nextclade_sort/main'
 include { NEXTCLADE_DATASETGET } from '../modules/nf-core/nextclade/datasetget/main'
 include { NEXTCLADE_RUN } from '../modules/nf-core/nextclade/run/main'
@@ -25,6 +24,7 @@ include { methodsDescriptionText } from '../subworkflows/local/utils_nfcore_omni
 workflow OMNIFLUSS_DOWNSTREAM {
     take:
     ch_samplesheet // channel: samplesheet read in from --input
+    ch_nextclade_dataset_config // channel: nextclade_dataset_config read in from --nextclade_dataset_config
 
     main:
     ch_versions = Channel.empty()
@@ -40,11 +40,7 @@ workflow OMNIFLUSS_DOWNSTREAM {
     ch_versions = ch_versions.mix(NEXTCLADE_SORT.out.versions)
 
 
-    ch_nextclade_dataset_config = Channel
-        .fromList(samplesheetToList(
-            params.nextclade_dataset_config, 
-            "${projectDir}/assets/schema_nextclade_dataset_config.json"
-        ))
+    ch_nextclade_datasets = ch_nextclade_dataset_config
         // path/to/nextclade/sort/output
         .combine(NEXTCLADE_SORT.out.sort_directory)
         .map{ meta, dataset_path, nextclade_sort_path ->
@@ -52,7 +48,7 @@ workflow OMNIFLUSS_DOWNSTREAM {
         }
         .filter { _meta, path -> path.exists() }
 
-    ch_nextclade_datasetget_input = ch_nextclade_dataset_config.multiMap { meta, _fasta ->
+    ch_nextclade_datasetget_input = ch_nextclade_datasets.multiMap { meta, _fasta ->
         dataset_name: [meta, meta.dataset_name]
         dataset_tag: params.latest_nextclade_dataset ? "" : meta.dataset_tag
     }
@@ -68,7 +64,7 @@ workflow OMNIFLUSS_DOWNSTREAM {
     ch_versions = ch_versions.mix(NEXTCLADE_DATASETGET.out.versions)
 
     ch_nextclade_run_input = NEXTCLADE_DATASETGET.out.dataset
-        .join(ch_nextclade_dataset_config)
+        .join(ch_nextclade_datasets)
         .multiMap{meta, dataset, fasta ->
             samples: [meta, fasta]
             dataset: [dataset]

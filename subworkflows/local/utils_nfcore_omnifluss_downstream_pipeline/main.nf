@@ -32,6 +32,7 @@ workflow PIPELINE_INITIALISATION {
     nextflow_cli_args //   array: List of positional nextflow CLI args
     outdir            //  string: The output directory where the results will be saved
     input             //  string: Path to input samplesheet
+    input_nextclade_dataset_config //  string: Path to input nextclade_dataset_config CSV file
     help              // boolean: Display help message and exit
     help_full         // boolean: Show the full help message
     show_hidden       // boolean: Show hidden parameters in the help message
@@ -91,8 +92,16 @@ workflow PIPELINE_INITIALISATION {
         }
         .set { ch_samplesheet }
 
+    Channel
+        .fromList(samplesheetToList(
+            params.nextclade_dataset_config, 
+            "${projectDir}/assets/schema_nextclade_dataset_config.json"
+        ))
+        .set { ch_nextclade_dataset_config }
+
     emit:
     samplesheet = ch_samplesheet
+    nextclade_dataset_config = ch_nextclade_dataset_config
     versions    = ch_versions
 }
 
