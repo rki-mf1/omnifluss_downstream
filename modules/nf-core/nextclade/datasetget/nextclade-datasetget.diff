@@ -1,0 +1,24 @@
+Changes in component 'nf-core/nextclade/datasetget'
+'modules/nf-core/nextclade/datasetget/environment.yml' is unchanged
+Changes in 'nextclade/datasetget/main.nf':
+--- modules/nf-core/nextclade/datasetget/main.nf
++++ modules/nf-core/nextclade/datasetget/main.nf
+@@ -8,11 +8,11 @@
+         'community.wave.seqera.io/library/nextclade:3.11.0--155203da8341cfe6' }"
+ 
+     input:
+-    val dataset
++    tuple val(meta), val(dataset)
+     val tag
+ 
+     output:
+-    path "$prefix"     , emit: dataset
++    tuple val(meta), path("$prefix")     , emit: dataset
+     path "versions.yml", emit: versions
+ 
+     when:
+
+'modules/nf-core/nextclade/datasetget/meta.yml' is unchanged
+'modules/nf-core/nextclade/datasetget/tests/main.nf.test' is unchanged
+'modules/nf-core/nextclade/datasetget/tests/main.nf.test.snap' is unchanged
+************************************************************
