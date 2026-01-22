@@ -5,6 +5,28 @@
     "description": "Omnifluss pipeline for downstream analyses.",
     "type": "object",
     "$defs": {
+        "nextclade_options": {
+            "title": "Nextclade options",
+            "type": "object",
+            "description": "",
+            "default": "",
+            "properties": {
+                "latest_nextclade_dataset": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Use the latest available Nextclade dataset instead of the default"
+                },
+                "nextclade_dataset_config": {
+                    "type": "string",
+                    "format": "file-path",
+                    "mimetype": "text/csv",
+                    "schema": "/assets/schema_nextclade_dataset_config.json",
+                    "description": "Path to comma-separated file containing information about the Nextclade datasets.",
+                    "help_text": "This file defines contains the necessary information to run Nextclade. Use this parameter to specify its location. It has to be a comma-separated file with 4 columns, and a header row."
+                }
+            },
+            "required": ["nextclade_dataset_config"]
+        },
         "input_output_options": {
             "title": "Input/output options",
             "type": "object",
@@ -20,11 +42,12 @@
                     "mimetype": "text/csv",
                     "pattern": "^\\S+\\.csv$",
                     "description": "Path to comma-separated file containing information about the samples in the experiment.",
-                    "help_text": "You will need to create a design file with information about the samples in your experiment before running the pipeline. Use this parameter to specify its location. It has to be a comma-separated file with 3 columns, and a header row.",
+                    "help_text": "You will need to create a design file with information about the samples in your experiment before running the pipeline. Use this parameter to specify its location. It has to be a comma-separated file with 2 columns, and a header row.",
                     "fa_icon": "fas fa-file-csv"
                 },
                 "genomes_is_segmented": {
-                    "type": "boolean"
+                    "type": "boolean",
+                    "description": "Flag if theinput genomes are segmented"
                 },
                 "outdir": {
                     "type": "string",
@@ -43,265 +66,6 @@
                     "type": "string",
                     "description": "MultiQC report title. Printed as page header, used for filename if not otherwise specified.",
                     "fa_icon": "fas fa-file-signature"
-                }
-            }
-        },
-        "general_nextclade_parameters": {
-            "title": "General Nextclade parameters",
-            "type": "object",
-            "description": "",
-            "default": "",
-            "help_text": "",
-            "properties": {
-                "get_nextclade_dataset": {
-                    "type": "boolean",
-                    "default": true
-                },
-                "nextclade_sort_extensions": {
-                    "type": "string"
-                },
-                "nextclade_sort_tags": {
-                    "type": "string"
-                },
-                "nextclade_dataset_tags": {
-                    "type": "string"
-                }
-            }
-        },
-        "cvd_specific_nextclade_parameters": {
-            "title": "CVD-specific Nextclade parameters",
-            "type": "object",
-            "default": "",
-            "properties": {
-                "mapping_sars_cov_2": {
-                    "type": "string"
-                },
-                "dataset_SC2": {
-                    "type": "string"
-                }
-            }
-        },
-        "msv_specific_nextclade_parameters": {
-            "title": "MSV-specific Nextclade parameters",
-            "type": "object",
-            "description": "",
-            "default": "",
-            "properties": {
-                "mapping_measles": {
-                    "type": "string"
-                },
-                "dataset_MSV": {
-                    "type": "string"
-                }
-            }
-        },
-        "inv_specific_nextclade_parameters": {
-            "title": "INV-specific Nextclade parameters",
-            "type": "object",
-            "description": "",
-            "default": "",
-            "properties": {
-                "mapping_flu_h1n1pdm_ha": {
-                    "type": "string",
-                    "hidden": true
-                },
-                "mapping_flu_h1n1pdm_na": {
-                    "type": "string",
-                    "hidden": true
-                },
-                "mapping_nextstrain_flu_h1n1pdm_mp": {
-                    "type": "string",
-                    "hidden": true
-                },
-                "mapping_nextstrain_flu_h1n1pdm_np": {
-                    "type": "string",
-                    "hidden": true
-                },
-                "mapping_nextstrain_flu_h1n1pdm_ns": {
-                    "type": "string",
-                    "hidden": true
-                },
-                "mapping_nextstrain_flu_h1n1pdm_pa": {
-                    "type": "string",
-                    "hidden": true
-                },
-                "mapping_nextstrain_flu_h1n1pdm_pb1": {
-                    "type": "string",
-                    "hidden": true
-                },
-                "mapping_nextstrain_flu_h1n1pdm_pb2": {
-                    "type": "string",
-                    "hidden": true
-                },
-                "mapping_flu_h3n2_ha": {
-                    "type": "string",
-                    "hidden": true
-                },
-                "mapping_flu_h3n2_na": {
-                    "type": "string",
-                    "hidden": true
-                },
-                "mapping_nextstrain_flu_h3n2_mp": {
-                    "type": "string",
-                    "hidden": true
-                },
-                "mapping_nextstrain_flu_h3n2_np": {
-                    "type": "string",
-                    "hidden": true
-                },
-                "mapping_nextstrain_flu_h3n2_ns": {
-                    "type": "string",
-                    "hidden": true
-                },
-                "mapping_nextstrain_flu_h3n2_pa": {
-                    "type": "string",
-                    "hidden": true
-                },
-                "mapping_nextstrain_flu_h3n2_pb1": {
-                    "type": "string",
-                    "hidden": true
-                },
-                "mapping_nextstrain_flu_h3n2_pb2": {
-                    "type": "string",
-                    "hidden": true
-                },
-                "mapping_flu_vic_ha": {
-                    "type": "string",
-                    "hidden": true
-                },
-                "mapping_flu_vic_na": {
-                    "type": "string",
-                    "hidden": true
-                },
-                "mapping_nextstrain_flu_vic_mp": {
-                    "type": "string",
-                    "hidden": true
-                },
-                "mapping_nextstrain_flu_vic_np": {
-                    "type": "string",
-                    "hidden": true
-                },
-                "mapping_nextstrain_flu_vic_ns": {
-                    "type": "string",
-                    "hidden": true
-                },
-                "mapping_nextstrain_flu_vic_pa": {
-                    "type": "string",
-                    "hidden": true
-                },
-                "mapping_nextstrain_flu_vic_pb1": {
-                    "type": "string",
-                    "hidden": true
-                },
-                "mapping_nextstrain_flu_vic_pb2": {
-                    "type": "string",
-                    "hidden": true
-                },
-                "dataset_H1N1_HA": {
-                    "type": "string"
-                },
-                "dataset_H1N1_NA": {
-                    "type": "string"
-                },
-                "dataset_H1N1_MP": {
-                    "type": "string"
-                },
-                "dataset_H1N1_NP": {
-                    "type": "string"
-                },
-                "dataset_H1N1_NS": {
-                    "type": "string"
-                },
-                "dataset_H1N1_PA": {
-                    "type": "string"
-                },
-                "dataset_H1N1_PB1": {
-                    "type": "string"
-                },
-                "dataset_H1N1_PB2": {
-                    "type": "string"
-                },
-                "dataset_H3N2_HA": {
-                    "type": "string"
-                },
-                "dataset_H3N2_NA": {
-                    "type": "string"
-                },
-                "dataset_H3N2_MP": {
-                    "type": "string"
-                },
-                "dataset_H3N2_NP": {
-                    "type": "string"
-                },
-                "dataset_H3N2_NS": {
-                    "type": "string"
-                },
-                "dataset_H3N2_PA": {
-                    "type": "string"
-                },
-                "dataset_H3N2_PB1": {
-                    "type": "string"
-                },
-                "dataset_H3N2_PB2": {
-                    "type": "string"
-                },
-                "dataset_H0N0_HA": {
-                    "type": "string"
-                },
-                "dataset_H0N0_NA": {
-                    "type": "string"
-                },
-                "dataset_H0N0_MP": {
-                    "type": "string"
-                },
-                "dataset_H0N0_NP": {
-                    "type": "string"
-                },
-                "dataset_H0N0_NS": {
-                    "type": "string"
-                },
-                "dataset_H0N0_PA": {
-                    "type": "string"
-                },
-                "dataset_H0N0_PB1": {
-                    "type": "string"
-                },
-                "dataset_H0N0_PB2": {
-                    "type": "string"
-                },
-                "mapping_community_moncla_lab_iav_h5_ha_all_clades": {
-                    "type": "string",
-                    "hidden": true
-                },
-                "mapping_community_moncla_lab_iav_h5_ha_2_3_2_1": {
-                    "type": "string",
-                    "hidden": true
-                },
-                "mapping_community_moncla_lab_iav_h5_ha_2_3_4_4": {
-                    "type": "string",
-                    "hidden": true
-                }
-            }
-        },
-        "rsv_specific_nextclade_parameters": {
-            "title": "RSV-specific Nextclade parameters",
-            "type": "object",
-            "description": "",
-            "default": "",
-            "properties": {
-                "mapping_rsv_a": {
-                    "type": "string",
-                    "hidden": true
-                },
-                "mapping_rsv_b": {
-                    "type": "string",
-                    "hidden": true
-                },
-                "dataset_RSV_A": {
-                    "type": "string"
-                },
-                "dataset_RSV_B": {
-                    "type": "string"
                 }
             }
         },
@@ -458,22 +222,10 @@
     },
     "allOf": [
         {
+            "$ref": "#/$defs/nextclade_options"
+        },
+        {
             "$ref": "#/$defs/input_output_options"
-        },
-        {
-            "$ref": "#/$defs/general_nextclade_parameters"
-        },
-        {
-            "$ref": "#/$defs/cvd_specific_nextclade_parameters"
-        },
-        {
-            "$ref": "#/$defs/msv_specific_nextclade_parameters"
-        },
-        {
-            "$ref": "#/$defs/inv_specific_nextclade_parameters"
-        },
-        {
-            "$ref": "#/$defs/rsv_specific_nextclade_parameters"
         },
         {
             "$ref": "#/$defs/institutional_config_options"
