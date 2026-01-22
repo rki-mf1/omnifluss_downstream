@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - fixed and pre-defined for INV
   - latest dataset version used for RSV, MSV, CVD
 
+### `Added`
+
+- added WGS and N450 nextclade dataset for MSV
+
 ## v0.1.0 [2025-12-10]
 
 Initial release of rki-mf1/omnifluss_downstream, created with the [nf-core](https://nf-co.re/) template.
