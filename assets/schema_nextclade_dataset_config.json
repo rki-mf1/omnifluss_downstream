@@ -1,6 +1,6 @@
 {
     "$schema": "https://json-schema.org/draft/2020-12/schema",
-    "$id": "https://raw.githubusercontent.com/rki-mf1/omnifluss_downstream/main/assets/schema_input.json",
+    "$id": "https://raw.githubusercontent.com/rki-mf1/omnifluss_downstream/main/assets/schema_nextclade_dataset_config.json",
     "title": "rki-mf1/omnifluss_downstream pipeline - params.nextclade_dataset_config schema",
     "description": "Schema for the file provided with params.nextclade_dataset_config",
     "type": "array",
