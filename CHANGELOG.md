@@ -10,10 +10,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - nextclade dataset versions can now be specified via a CSV file (`--nextclade_dataset_config`)
   - fixed and pre-defined for INV
   - latest dataset version used for RSV, MSV, CVD
+- nextclade dataset retrieval is not cached anymore to ensure latest datasets are always used 
 
 ### `Added`
 
 - added WGS and N450 nextclade dataset for MSV
+- nextclade input fasta sequences are now sorted by header IDs using a custom Biopython module
 
 ## v0.1.0 [2025-12-10]
 

@@ -5,6 +5,7 @@
 */
 include { NEXTCLADE_SORT } from '../modules/local/nextclade_sort/main'
 include { NEXTCLADE_DATASETGET } from '../modules/nf-core/nextclade/datasetget/main'
+include { SORT_FASTA_BIOPYTHON } from '../modules/local/sort_fasta_biopython/main'
 include { NEXTCLADE_RUN } from '../modules/nf-core/nextclade/run/main'
 include { NEXTCLADE_POSTPROCESSING } from '../modules/local/nextclade_postprocessing/main'
 include { NEXTCLADE_DATASET_PROVENANCE } from '../modules/local/nextclade_dataset_provenance/main'
@@ -34,21 +35,34 @@ workflow OMNIFLUSS_DOWNSTREAM {
     // NEXTCLADE_SORT:
     // Automatically deposit consensus sequences into species and clade subfolders 
     //
-    // collect all consensus sequences
     ch_nextclade_sort_input = ch_samplesheet.collect { it[1] }
     NEXTCLADE_SORT(ch_nextclade_sort_input)
     ch_versions = ch_versions.mix(NEXTCLADE_SORT.out.versions)
 
-
-    ch_nextclade_datasets = ch_nextclade_dataset_config
-        // path/to/nextclade/sort/output
+    //
+    // Prepare input:
+    // select all fasta files from nextclade sort output that correspond to the datasets specified in the nextclade dataset config
+    // the work dir path to the nextclade sort output is combined with the dataset paths from the nextclade dataset config
+    // existing paths are selected for further processing
+    //
+    ch_nextclade_sort_fasta_with_dataset = ch_nextclade_dataset_config
         .combine(NEXTCLADE_SORT.out.sort_directory)
         .map{ meta, dataset_path, nextclade_sort_path ->
             [meta, file("${nextclade_sort_path}/${dataset_path}")]
         }
         .filter { _meta, path -> path.exists() }
 
-    ch_nextclade_datasetget_input = ch_nextclade_datasets.multiMap { meta, _fasta ->
+    //
+    // SORT_FASTA_BIOPYTHON:
+    // Sort fasta sequences by header ids to ensure consistent ordering
+    //
+    SORT_FASTA_BIOPYTHON(ch_nextclade_sort_fasta_with_dataset)
+    ch_versions = ch_versions.mix(SORT_FASTA_BIOPYTHON.out.versions)
+
+    ch_nextclade_input = SORT_FASTA_BIOPYTHON.out.sorted_fasta
+
+    // Prepare input for nextclade datasetget
+    ch_nextclade_datasetget_input = ch_nextclade_input.multiMap { meta, _fasta ->
         dataset_name: [meta, meta.dataset_name]
         dataset_tag: params.latest_nextclade_dataset ? "" : meta.dataset_tag
     }
@@ -63,14 +77,15 @@ workflow OMNIFLUSS_DOWNSTREAM {
     )
     ch_versions = ch_versions.mix(NEXTCLADE_DATASETGET.out.versions)
 
+    // Prepare input for nextclade run
     ch_nextclade_run_input = NEXTCLADE_DATASETGET.out.dataset
-        .join(ch_nextclade_datasets)
+        .join(ch_nextclade_input)
         .multiMap{meta, dataset, fasta ->
             samples: [meta, fasta]
             dataset: [dataset]
         }
 
-    // //
+    //
     // NEXTLCADE_RUN:
     // Perform the nextclade analysis on a set of consensus sequences, with their corresponding reference dataset
     //
