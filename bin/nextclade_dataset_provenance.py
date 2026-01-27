@@ -64,6 +64,7 @@ def main():
             "nextclade.dataset.name",
             "nextclade.dataset.shortcut",
             "nextclade.dataset.reference.name",
+            "omnifluss.dataset_id",
         ]
     ].copy()
     df_provenance_mqc.rename(
