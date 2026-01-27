@@ -29,6 +29,7 @@ workflow RKIMF1_OMNIFLUSS_DOWNSTREAM {
 
     take:
     samplesheet // channel: samplesheet read in from --input
+    nextclade_dataset_config // channel: nextclade_dataset_config read in from --nextclade_dataset_config
 
     main:
 
@@ -36,7 +37,8 @@ workflow RKIMF1_OMNIFLUSS_DOWNSTREAM {
     // WORKFLOW: Run pipeline
     //
     OMNIFLUSS_DOWNSTREAM (
-        samplesheet
+        samplesheet,
+        nextclade_dataset_config
     )
     emit:
     multiqc_report = OMNIFLUSS_DOWNSTREAM.out.multiqc_report // channel: /path/to/multiqc_report.html
@@ -60,6 +62,7 @@ workflow {
         args,
         params.outdir,
         params.input,
+        params.nextclade_dataset_config,
         params.help,
         params.help_full,
         params.show_hidden
@@ -69,7 +72,8 @@ workflow {
     // WORKFLOW: Run main workflow
     //
     RKIMF1_OMNIFLUSS_DOWNSTREAM (
-        PIPELINE_INITIALISATION.out.samplesheet
+        PIPELINE_INITIALISATION.out.samplesheet,
+        PIPELINE_INITIALISATION.out.nextclade_dataset_config
     )
     //
     // SUBWORKFLOW: Run completion tasks

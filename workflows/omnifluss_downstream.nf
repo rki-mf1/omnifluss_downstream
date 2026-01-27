@@ -5,6 +5,7 @@
 */
 include { NEXTCLADE_SORT } from '../modules/local/nextclade_sort/main'
 include { NEXTCLADE_DATASETGET } from '../modules/nf-core/nextclade/datasetget/main'
+include { SORT_FASTA_BIOPYTHON } from '../modules/local/sort_fasta_biopython/main'
 include { NEXTCLADE_RUN } from '../modules/nf-core/nextclade/run/main'
 include { NEXTCLADE_POSTPROCESSING } from '../modules/local/nextclade_postprocessing/main'
 include { NEXTCLADE_DATASET_PROVENANCE } from '../modules/local/nextclade_dataset_provenance/main'
@@ -24,93 +25,73 @@ include { methodsDescriptionText } from '../subworkflows/local/utils_nfcore_omni
 workflow OMNIFLUSS_DOWNSTREAM {
     take:
     ch_samplesheet // channel: samplesheet read in from --input
+    ch_nextclade_dataset_config // channel: nextclade_dataset_config read in from --nextclade_dataset_config
 
     main:
-    ch_consensus_sequences = ch_samplesheet
     ch_versions = Channel.empty()
     ch_multiqc_files = Channel.empty()
-
-    // collect all consensus sequences
-    ch_nextclade_sort_input = ch_consensus_sequences.collect { it[1] }
-
 
     //
     // NEXTCLADE_SORT:
     // Automatically deposit consensus sequences into species and clade subfolders 
     //
+    ch_nextclade_sort_input = ch_samplesheet.collect { it[1] }
     NEXTCLADE_SORT(ch_nextclade_sort_input)
     ch_versions = ch_versions.mix(NEXTCLADE_SORT.out.versions)
 
-    // channel: "path/to/nextstrain"
-    ch_nextclade_sort = NEXTCLADE_SORT.out.sort_directory
-
-
-    // combine directory from NEXTCLADE_SORT, file extensions, and tags according to selected pathogen
-    // filter out files that don't exist (type/segment not present)
-    // channel: [[id:tag], path/to/sequences.fasta]
-    ch_nextclade_run_input = ch_nextclade_sort
-        .combine(Channel.from(params.nextclade_sort_extensions.split(",")))
-        .merge(Channel.from(params.nextclade_sort_tags.split(",")))
-        .map { sort_directory, suffix, tag ->
-            [[id: tag], file("${sort_directory}/${suffix}")]
+    //
+    // Prepare input:
+    // select all fasta files from nextclade sort output that correspond to the datasets specified in the nextclade dataset config
+    // the work dir path to the nextclade sort output is combined with the dataset paths from the nextclade dataset config
+    // existing paths are selected for further processing
+    //
+    ch_nextclade_sort_fasta_with_dataset = ch_nextclade_dataset_config
+        .combine(NEXTCLADE_SORT.out.sort_directory)
+        .map{ meta, dataset_path, nextclade_sort_path ->
+            [meta, file("${nextclade_sort_path}/${dataset_path}")]
         }
         .filter { _meta, path -> path.exists() }
 
+    //
+    // SORT_FASTA_BIOPYTHON:
+    // Sort fasta sequences by header ids to ensure consistent ordering
+    //
+    SORT_FASTA_BIOPYTHON(ch_nextclade_sort_fasta_with_dataset)
+    ch_versions = ch_versions.mix(SORT_FASTA_BIOPYTHON.out.versions)
 
+    ch_nextclade_input = SORT_FASTA_BIOPYTHON.out.sorted_fasta
 
-    if (params.get_nextclade_dataset) {
-        // channel: ["nextclade_reference_tag"]
-        ch_nextclade_datasetget_input = Channel.from(params.nextclade_dataset_tags.split(","))
-
-        //
-        // NEXTCLADE_DATASETGET:
-        // Download specified nextclade reference dataset
-        //
-        NEXTCLADE_DATASETGET(
-            ch_nextclade_datasetget_input,
-            "",
-        )
-        ch_versions = ch_versions.mix(NEXTCLADE_DATASETGET.out.versions)
-
-
-        // channel: [[id:tag], path/to/nextclade_reference_set]
-        ch_dataset = NEXTCLADE_DATASETGET.out.dataset.map { dataset ->
-            def dir_name = dataset.getName()
-            // replace all point since they cannot be part of parameter names
-            def dir_name_clean = dir_name.replaceAll('\\.', '_')
-            [[id: params["mapping_" + dir_name_clean]], dataset]
-        }
-
-        // join samples and datasets
-        ch_tmp_join = ch_nextclade_run_input.join(ch_dataset)
-
-        // channel: [[id:tag], path/to/sequences.fasta]
-        ch_nextclade_run_input = ch_tmp_join.map { meta, sample, _dataset ->
-            return [meta, sample]
-        }
-        ch_nextclade_run_input
-
-        // channel: [path/to/nextclade_reference_set]
-        ch_dataset = ch_tmp_join.map { _meta, _sample, dataset ->
-            return dataset
-        }
+    // Prepare input for nextclade datasetget
+    ch_nextclade_datasetget_input = ch_nextclade_input.multiMap { meta, _fasta ->
+        dataset_name: [meta, meta.dataset_name]
+        dataset_tag: params.latest_nextclade_dataset ? "" : meta.dataset_tag
     }
-    else {
 
-        // use a mapping to load the references in the correct order
-        // channel: [path/to/nextclade_reference_set]
-        ch_dataset = ch_nextclade_run_input.map { meta, _path ->
-            return params["dataset_" + meta.id]
+    //
+    // NEXTCLADE_DATASETGET:
+    // Download specified nextclade reference dataset
+    //
+    NEXTCLADE_DATASETGET(
+        ch_nextclade_datasetget_input.dataset_name,
+        ch_nextclade_datasetget_input.dataset_tag,
+    )
+    ch_versions = ch_versions.mix(NEXTCLADE_DATASETGET.out.versions)
+
+    // Prepare input for nextclade run
+    ch_nextclade_run_input = NEXTCLADE_DATASETGET.out.dataset
+        .join(ch_nextclade_input)
+        .multiMap{meta, dataset, fasta ->
+            samples: [meta, fasta]
+            dataset: [dataset]
         }
-    }
 
     //
     // NEXTLCADE_RUN:
     // Perform the nextclade analysis on a set of consensus sequences, with their corresponding reference dataset
     //
     NEXTCLADE_RUN(
-        ch_nextclade_run_input,
-        ch_dataset,
+        ch_nextclade_run_input.samples,
+        ch_nextclade_run_input.dataset,
     )
     ch_versions = ch_versions.mix(NEXTCLADE_RUN.out.versions)
 
