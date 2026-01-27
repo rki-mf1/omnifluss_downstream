@@ -21,8 +21,8 @@
         {
             "@id": "./",
             "@type": "Dataset",
-            "creativeWorkStatus": "InProgress",
-            "datePublished": "2025-11-07T15:21:15+00:00",
+            "creativeWorkStatus": "Stable",
+            "datePublished": "2026-01-27T15:23:45+00:00",
             "description": "# rki-mf1/omnifluss_downstream\n\n## Introduction\n\n**rki-mf1/omnifluss_downstream** is a bioinformatics pipeline that ...\n\n1. Assign to each single fasta sequence a Nextclade dataset ([`nextcalde sort`](https://github.com/nextstrain/nextclade))\n2. Clade/lineage assignment, mutation calling and sequence quality checks ([`nextcalde run`](https://github.com/nextstrain/nextclade))\n   1. Add Nextclade dataset version information for each fasta file\n3. Summarize results ([`MultiQC`](http://multiqc.info/))\n\n... for SARS-CoV-2, influenza virus (A/H1N1, A/H3N2, A/H5Nx and B/Victoria), measles virus and respiratory syncytial virus (RSV).\n\nBy default, the latest available Nextclade dataset will be used for the respective sequences.\n\n## Usage\n\n> [!NOTE]\n> If you are new to Nextflow and nf-core, please refer to [this page](https://nf-co.re/docs/usage/installation) on how to set-up Nextflow. Make sure to [test your setup](https://nf-co.re/docs/usage/introduction#how-to-run-a-pipeline) with `-profile test` before running the workflow on actual data.\n\nFirst, prepare a samplesheet with your input data that looks as follows:\n\n`samplesheet.csv`:\n\n```csv\nsample,fasta\nAEG588A1,/path/to/fasta/AEG588A1.fasta\n```\n\nEach row represents a single or multi fasta file.\n\n> [!NOTE]\n> For segmented genomes (currently influenza, `-profile INV`), each line should represent one sample, thus a multi fasta file with all segments of a sample.\n\nNow, you can run the pipeline using:\n\n<!-- TODO nf-core: update the following command to include all required parameters for a minimal example -->\n\n```bash\nnextflow run rki-mf1/omnifluss_downstream \\\n   -profile <docker/singularity/.../institute/PATHOGEN> \\\n   --input samplesheet.csv \\\n   --outdir <OUTDIR>\n```\n\nCurrently supported pathogen profiles are:\n\n| Profile name | Pathogen                    |\n| ------------ | --------------------------- |\n| CVD          | SARS-CoV-2                  |\n| INV          | Influenza virus             |\n| MSV          | Measles virus               |\n| RSV          | Respiratory syncytial virus |\n\nFor more details on the available parameters, please see the output of:\n\n```bash\nnextflow run rki-mf1/omnifluss_downstream --help\n```\n\n> [!WARNING]\n> Please provide pipeline parameters via the CLI or Nextflow `-params-file` option. Custom config files including those provided by the `-c` Nextflow option can be used to provide any configuration _**except for parameters**_; see [docs](https://nf-co.re/docs/usage/getting_started/configuration#custom-configuration-files).\n\n### Nextclade dataset specification\n\nThe pipeline utilizes different Nextclade datasets for each pathogen in one pipeline run. The Nextclade datasets and dataset versions are specified CSV files locate `assets/<PATHOGEN>_nextclade_dataset_config.csv`:\n\n```csv\ndataset_short_name,nextclade_sort_extensions,nextclade_dataset_name,nextclade_dataset_tag\nSC2,nextstrain/sars-cov-2/sequences.fasta,sars-cov-2,2025-12-05--10-40-14Z\n```\n\nBy default, the latest available Nextclade dataset will be used for the respective sequences, except for influenza virus (`-profile INV`), where a the dataset version is fixed for the season.\n\nTo specify a custom Nextclade dataset version for a pathogen, you can provide your own CSV file via the `--nextclade_dataset_config` parameter. The custom CSV file must follow the same format as described above.\n\n## Credits\n\nrki-mf1/omnifluss_downstream was originally written by [Dimitri Ternovoj](https://github.com/DimitriTernovoj) and is currently developed and maintained by [Marie Lataretu](https://github.com/MarieLataretu/).\n\nWe thank the following people for their extensive assistance in the development of this pipeline:\n\n- [Thomas Krannich](https://github.com/Krannich479)\n\n## Contributions and Support\n\nIf you would like to contribute to this pipeline, please see the [contributing guidelines](.github/CONTRIBUTING.md).\n\n## Citations\n\n<!-- TODO nf-core: Add citation for pipeline after first release. Uncomment lines below and update Zenodo doi and badge at the top of this file. -->\n<!-- If you use rki-mf1/omnifluss_downstream for your analysis, please cite it using the following doi: [10.5281/zenodo.XXXXXX](https://doi.org/10.5281/zenodo.XXXXXX) -->\n\n<!-- TODO nf-core: Add bibliography of tools and data used in your pipeline -->\n\nAn extensive list of references for the tools used by the pipeline can be found in the [`CITATIONS.md`](CITATIONS.md) file.\n\nThis pipeline uses code and infrastructure developed and maintained by the [nf-core](https://nf-co.re) community, reused here under the [MIT license](https://github.com/nf-core/tools/blob/main/LICENSE).\n\n> **The nf-core framework for community-curated bioinformatics pipelines.**\n>\n> Philip Ewels, Alexander Peltzer, Sven Fillinger, Harshil Patel, Johannes Alneberg, Andreas Wilm, Maxime Ulysse Garcia, Paolo Di Tommaso & Sven Nahnsen.\n>\n> _Nat Biotechnol._ 2020 Feb 13. doi: [10.1038/s41587-020-0439-x](https://dx.doi.org/10.1038/s41587-020-0439-x).\n",
             "hasPart": [
                 {
@@ -32,6 +32,9 @@
                     "@id": "assets/"
                 },
                 {
+                    "@id": "bin/"
+                },
+                {
                     "@id": "conf/"
                 },
                 {
@@ -39,6 +42,9 @@
                 },
                 {
                     "@id": "modules/"
+                },
+                {
+                    "@id": "modules/local/"
                 },
                 {
                     "@id": "modules/nf-core/"
@@ -93,7 +99,7 @@
             },
             "mentions": [
                 {
-                    "@id": "#b0114202-01fc-4f2f-9b1d-f26fa578a6b0"
+                    "@id": "#b3323b02-b2e1-4014-99da-cb98041ce219"
                 }
             ],
             "name": "rki-mf1/omnifluss_downstream"
@@ -120,8 +126,13 @@
                 "SoftwareSourceCode",
                 "ComputationalWorkflow"
             ],
+            "creator": [
+                {
+                    "@id": "#LataretuM@rki.de"
+                }
+            ],
             "dateCreated": "",
-            "dateModified": "2025-11-07T16:21:15Z",
+            "dateModified": "2026-01-27T16:23:45Z",
             "dct:conformsTo": "https://bioschemas.org/profiles/ComputationalWorkflow/1.0-RELEASE/",
             "keywords": [
                 "nf-core",
@@ -141,10 +152,10 @@
             },
             "url": [
                 "https://github.com/rki-mf1/omnifluss_downstream",
-                "https://nf-co.re/rki-mf1/omnifluss_downstream/dev/"
+                "https://nf-co.re/rki-mf1/omnifluss_downstream/0.2.0/"
             ],
             "version": [
-                "0.1.0"
+                "0.2.0"
             ]
         },
         {
@@ -160,11 +171,11 @@
             "version": "!>=25.04.0"
         },
         {
-            "@id": "#b0114202-01fc-4f2f-9b1d-f26fa578a6b0",
+            "@id": "#b3323b02-b2e1-4014-99da-cb98041ce219",
             "@type": "TestSuite",
             "instance": [
                 {
-                    "@id": "#458d25d2-2d17-4aa2-bcf7-b252ffd760d2"
+                    "@id": "#05db8b3f-b9d5-4487-a099-e26b957ee992"
                 }
             ],
             "mainEntity": {
@@ -173,7 +184,7 @@
             "name": "Test suite for rki-mf1/omnifluss_downstream"
         },
         {
-            "@id": "#458d25d2-2d17-4aa2-bcf7-b252ffd760d2",
+            "@id": "#05db8b3f-b9d5-4487-a099-e26b957ee992",
             "@type": "TestInstance",
             "name": "GitHub Actions workflow for testing rki-mf1/omnifluss_downstream",
             "resource": "repos/rki-mf1/omnifluss_downstream/actions/workflows/nf-test.yml",
@@ -196,6 +207,11 @@
             "description": "Additional files"
         },
         {
+            "@id": "bin/",
+            "@type": "Dataset",
+            "description": "Scripts that must be callable from a pipeline process"
+        },
+        {
             "@id": "conf/",
             "@type": "Dataset",
             "description": "Configuration files"
@@ -209,6 +225,11 @@
             "@id": "modules/",
             "@type": "Dataset",
             "description": "Modules used by the pipeline"
+        },
+        {
+            "@id": "modules/local/",
+            "@type": "Dataset",
+            "description": "Pipeline-specific modules"
         },
         {
             "@id": "modules/nf-core/",
@@ -290,6 +311,12 @@
             "@type": "Organization",
             "name": "nf-core",
             "url": "https://nf-co.re/"
+        },
+        {
+            "@id": "#LataretuM@rki.de",
+            "@type": "Person",
+            "email": "LataretuM@rki.de",
+            "name": "Lataretu, Marie"
         }
     ]
 }
