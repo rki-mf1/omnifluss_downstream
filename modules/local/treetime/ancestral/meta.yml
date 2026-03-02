@@ -1,0 +1,66 @@
+name: "treetime_ancestral"
+description: Reconstruct ancestral sequences and map mutations to tree branches
+keywords:
+  - ancestral reconstruction
+  - phylogenetics
+  - mutations
+  - evolutionary analysis
+tools:
+  - "treetime":
+      description: "Maximum likelihood dating and ancestral sequence inference for phylogenetic trees"
+      homepage: "https://treetime.readthedocs.io/"
+      documentation: "https://treetime.readthedocs.io/"
+      tool_dev_url: "https://github.com/neherlab/treetime"
+      doi: "10.1093/ve/vex042"
+      licence: ["MIT"]
+
+input:
+  - meta:
+      type: map
+      description: |
+        Groovy Map containing sample information
+        e.g. `[ id:'sample1', single_end:false ]`
+  - tree:
+      type: file
+      description: Input phylogenetic tree in Newick format
+      pattern: "*.{nwk,tree,treefile}"
+  - alignment:
+      type: file
+      description: Multiple sequence alignment in FASTA format
+      pattern: "*.{fasta,fa,fna,aln}"
+  - metadata:
+      type: file
+      description: Optional metadata file with dates for temporal analysis
+      pattern: "*.{csv,tsv,txt}"
+
+output:
+  - meta:
+      type: map
+      description: |
+        Groovy Map containing sample information
+        e.g. `[ id:'sample1', single_end:false ]`
+  - versions:
+      type: file
+      description: File containing software versions
+      pattern: "versions.yml"
+  - tree:
+      type: file
+      description: Annotated phylogenetic tree with ancestral reconstructions
+      pattern: "*_ancestral_tree.nwk"
+  - fasta:
+      type: file
+      description: Reconstructed ancestral sequences in FASTA format
+      pattern: "*_ancestral.fasta"
+  - mutations:
+      type: file
+      description: List of mutations mapped to branches
+      pattern: "*_mutations.txt"
+  - json:
+      type: file
+      description: Ancestral sequences in JSON format
+      pattern: "*_ancestral_sequences.json"
+
+authors:
+  - "@seqeraai"
+maintainers:
+  - "@seqeraai"
