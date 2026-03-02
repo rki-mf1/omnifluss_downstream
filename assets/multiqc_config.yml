@@ -29,6 +29,8 @@ custom_data:
       title: 'Dataset Provenance Information'
       col1_header: 'Sample Name'  # Customize first column header if needed
       sortRows: true # Sort by column name
+      no_beeswarm: true
+      no_violin: true
       # only_defined_headers: true
       # sort_rows_by: 'Sample Name'  # Use the actual column header
       # sort_rows_order: 'asc'
@@ -88,6 +90,7 @@ custom_data:
       col1_header: 'Sequence Name'  # Customize first column header if needed
       only_defined_headers: true
       no_beeswarm: true
+      no_violin: true
     headers:
       Sequence Name:
         description: 'Name of the sequence analyzed'
