@@ -3,6 +3,7 @@
     IMPORT MODULES / SUBWORKFLOWS / FUNCTIONS
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
+include { CAT_CAT } from '../modules/nf-core/cat/cat/main'
 include { NEXTCLADE_SORT } from '../modules/local/nextclade_sort/main'
 include { NEXTCLADE_DATASETGET } from '../modules/nf-core/nextclade/datasetget/main'
 include { NEXTCLADE_RUN } from '../modules/nf-core/nextclade/run/main'
@@ -14,6 +15,10 @@ include { paramsSummaryMap } from 'plugin/nf-schema'
 include { paramsSummaryMultiqc } from '../subworkflows/nf-core/utils_nfcore_pipeline'
 include { softwareVersionsToYAML } from '../subworkflows/nf-core/utils_nfcore_pipeline'
 include { methodsDescriptionText } from '../subworkflows/local/utils_nfcore_omnifluss_downstream_pipeline'
+include { MAFFT_ALIGN } from '../modules/nf-core/mafft/align/main'                                                                                     
+include { FASTA_CONCAT_BY_HEADER_AND_FILTER } from '../modules/local/fasta_concat_by_header_and_filter/main'
+include { IQTREE } from '../modules/nf-core/iqtree/main'
+include { TREETIME_ANCESTRAL } from '../modules/local/treetime/ancestral/main'                                                                                  
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -25,6 +30,7 @@ workflow OMNIFLUSS_DOWNSTREAM {
     take:
     ch_samplesheet // channel: samplesheet read in from --input
     ch_nextclade_dataset_config // channel: nextclade_dataset_config read in from --nextclade_dataset_config
+    ch_phylo_external_sequences // channel: phylo_external_sequences read in from --phylo_external_sequences
 
     main:
     ch_versions = Channel.empty()
@@ -70,7 +76,7 @@ workflow OMNIFLUSS_DOWNSTREAM {
             dataset: [dataset]
         }
 
-    // //
+    //
     // NEXTLCADE_RUN:
     // Perform the nextclade analysis on a set of consensus sequences, with their corresponding reference dataset
     //
@@ -112,6 +118,86 @@ workflow OMNIFLUSS_DOWNSTREAM {
         ch_versions = ch_versions.mix(NEXTCLADE_PER_SAMPLE_TABLE.out.versions)
         ch_multiqc_files = ch_multiqc_files.mix(NEXTCLADE_PER_SAMPLE_TABLE.out.per_sample_table.collect())
     }
+
+    ch_prot_fasta = NEXTCLADE_RUN.out.fasta_translation
+        // filter all HA nextclade outputs
+        .filter { meta, _fastas ->
+            meta.id.endsWith('_HA')
+        }
+        // filer all fastas with HA1 or HA2 from the list of translation fastas
+        .map { meta, fastas -> 
+            def fasta_filtered = fastas.findAll { fasta -> 
+                fasta.name.contains('.HA1.') || fasta.name.contains('.HA2.')
+            }
+            [meta, fasta_filtered]
+        }
+        // filer out entries with not exactly 2 HA segments
+        .filter { _meta, fastas -> fastas.size() == 2 }
+        // sort the 2 segments into HA1 and HA2
+        .map { meta, fastas -> 
+            def fasta_ha1 = fastas.find { fasta -> fasta.name.contains('.HA1.') }
+            def fasta_ha2 = fastas.find { fasta -> fasta.name.contains('.HA2.') }
+            [meta, [fasta_ha1, fasta_ha2]]
+        }
+    
+    // concat fasta records samples-wise into single fasta with 2 sequences (HA1 and HA2)   
+    FASTA_CONCAT_BY_HEADER_AND_FILTER(
+        ch_prot_fasta,
+        "-sw- -swine- sw-o-ms /swine/",
+        0.3
+    )
+
+    // concat with external input aa fasta file with full length HA sequences for reference
+    ch_prot_fasta_tmp = FASTA_CONCAT_BY_HEADER_AND_FILTER.out.map { meta, fas ->
+        [meta.id, meta, fas]
+    }
+    // if ch_phylo_external_sequences is not empty, concat with ch_prot_fasta_tmp
+    // else, just use ch_prot_fasta_tmp
+    ch_cat_input = params.phylo_external_sequences ? 
+        ch_phylo_external_sequences
+        .map{ meta, fas ->
+            [meta.id, fas] 
+        }
+        .join(ch_prot_fasta_tmp).map { _id, ext_fas, meta, fas -> 
+            [meta, [ext_fas, fas]]
+        }
+        : ch_prot_fasta_tmp.map { _id, meta, fas -> 
+                [meta, fas]
+            }
+    CAT_CAT(ch_cat_input)
+
+    ch_mafft_input = CAT_CAT.out.file_out.map { meta, fas -> 
+        // Find header containing "root"
+        def rootHeader = fas.text
+            .split('\n')
+            .findAll { it.startsWith('>') }
+            .find { it.toLowerCase().contains('root') }
+        
+        // Safe extraction with null check
+        def outgroupId = rootHeader 
+            ? rootHeader.replaceAll('^>', '').split(/\s+/)[0]
+            : false
+        
+        // Add to meta
+        [meta + [outgroup_id: outgroupId], fas]
+    }
+
+    MAFFT_ALIGN(
+        ch_mafft_input.dump(),
+        [[], []], [[], []], [[], []], [[], []], [[], []], false 
+    )
+
+    ch_iqtree_input = MAFFT_ALIGN.out.fas.map { meta, fas -> 
+            [meta, fas, []]
+    }
+    IQTREE(
+        ch_iqtree_input, 
+        [], [], [], [], [], [], [], [], [], [], [], []
+    )
+
+    TREETIME_ANCESTRAL(
+        IQTREE.out.phylogeny.join(MAFFT_ALIGN.out.fas)
+    )
 
     //
     // Collate and save software versions

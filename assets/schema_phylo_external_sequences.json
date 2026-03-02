@@ -1,0 +1,26 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://raw.githubusercontent.com/rki-mf1/omnifluss_downstream/main/assets/schema_phylo_external_sequences.json",
+    "title": "rki-mf1/omnifluss_downstream pipeline - params.phylo_external_sequences schema",
+    "description": "Schema for the file provided with params.phylo_external_sequences",
+    "type": "array",
+    "items": {
+        "type": "object",
+        "properties": {
+            "dataset_short_name": {
+                "type": "string",
+                "pattern": "^\\S+$",
+                "errorMessage": "A short dataset name must be provided and cannot contain spaces",
+                "meta": ["id"]
+            },
+            "fasta": {
+                "type": "string",
+                "format": "file-path",
+                "exists": true,
+                "pattern": ".*\\.(fa|fasta)$",
+                "errorMessage": "Input must be a FASTA file (.fa/.fasta)"
+            }
+        },
+        "required": ["dataset_short_name", "fasta"]
+    }
+}

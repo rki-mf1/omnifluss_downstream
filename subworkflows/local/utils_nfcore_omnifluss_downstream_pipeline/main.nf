@@ -33,6 +33,7 @@ workflow PIPELINE_INITIALISATION {
     outdir            //  string: The output directory where the results will be saved
     input             //  string: Path to input samplesheet
     input_nextclade_dataset_config //  string: Path to input nextclade_dataset_config CSV file
+    input_phylo_external_sequences //  string: Path to input phylo_external_sequences CSV file
     help              // boolean: Display help message and exit
     help_full         // boolean: Show the full help message
     show_hidden       // boolean: Show hidden parameters in the help message
@@ -98,10 +99,20 @@ workflow PIPELINE_INITIALISATION {
             "${projectDir}/assets/schema_nextclade_dataset_config.json"
         ))
         .set { ch_nextclade_dataset_config }
+    
+    params.phylo_external_sequences ?
+        Channel
+            .fromList(samplesheetToList(
+                params.phylo_external_sequences, 
+                "${projectDir}/assets/schema_phylo_external_sequences.json"
+            ))
+            .set { ch_phylo_external_sequences }
+        : Channel.empty().set { ch_phylo_external_sequences }
 
     emit:
     samplesheet = ch_samplesheet
     nextclade_dataset_config = ch_nextclade_dataset_config
+    phylo_external_sequences = ch_phylo_external_sequences
     versions    = ch_versions
 }
 
