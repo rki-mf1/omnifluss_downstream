@@ -116,6 +116,8 @@ def main():
             "clade": "nextclade.clade",
             "qc.overallStatus": "nextclade.qc.overallStatus",
         })
+        # sort table by nextclade.seqName
+        df_sample = df_sample.sort_values(by=["nextclade.seqName"]) 
         df_sample.to_csv(f"{sample}_types_per_sample.tsv", sep="\t", index=False)
 
 

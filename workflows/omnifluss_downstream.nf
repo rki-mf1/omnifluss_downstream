@@ -5,6 +5,7 @@
 */
 include { CAT_CAT } from '../modules/nf-core/cat/cat/main'
 include { NEXTCLADE_SORT } from '../modules/local/nextclade_sort/main'
+include { SEQKIT_SORT } from '../modules/nf-core/seqkit/sort/main'
 include { NEXTCLADE_DATASETGET } from '../modules/nf-core/nextclade/datasetget/main'
 include { NEXTCLADE_RUN } from '../modules/nf-core/nextclade/run/main'
 include { NEXTCLADE_POSTPROCESSING } from '../modules/local/nextclade_postprocessing/main'
@@ -53,6 +54,10 @@ workflow OMNIFLUSS_DOWNSTREAM {
             [meta, file("${nextclade_sort_path}/${dataset_path}")]
         }
         .filter { _meta, path -> path.exists() }
+
+    // Sort fasta by header ID
+    SEQKIT_SORT(ch_nextclade_datasets_unsorted)
+    ch_nextclade_datasets = SEQKIT_SORT.out.fastx
 
     ch_nextclade_datasetget_input = ch_nextclade_datasets.multiMap { meta, _fasta ->
         dataset_name: [meta, meta.dataset_name]
