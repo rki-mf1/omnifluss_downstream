@@ -1,0 +1,51 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/nf-core/modules/master/subworkflows/yaml-schema.json
+name: "fasta_msa_phylo"
+description: Multiple sequence alignment and phylogenetic tree construction workflow
+keywords:
+  - msa
+  - multiple sequence alignment
+  - phylogeny
+  - phylogenetic tree
+  - ancestral reconstruction
+  - mafft
+  - iqtree
+  - treetime
+
+modules:
+  - nf-core/mafft/align
+  - nf-core/iqtree
+  - local/treetime/ancestral
+
+input:
+  - ch_fasta:
+      type: file
+      description: |
+        Channel containing FASTA files with sequence data.
+        Structure: [ val(meta), path(fasta) ]
+      pattern: "*.{fasta,fa,fna}"
+
+output:
+  - msa:
+      type: file
+      description: |
+        Channel containing multiple sequence alignment in FASTA format
+        Structure: [ val(meta), path(fasta) ]
+      pattern: "*.{fasta,fa}"
+  - tree:
+      type: file
+      description: |
+        Channel containing phylogenetic tree with ancestral reconstruction in Nexus format
+        Structure: [ val(meta), path(nexus) ]
+      pattern: "*.nexus"
+  - json:
+      type: file
+      description: |
+        Channel containing TreeTime ancestral reconstruction results in JSON format
+        Structure: [ val(meta), path(json) ]
+      pattern: "*.json"
+
+authors:
+  - "@MarieLataretu"
+
+maintainers:
+  - "@MarieLataretu"

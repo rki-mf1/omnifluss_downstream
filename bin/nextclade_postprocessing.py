@@ -39,7 +39,7 @@ def create_tbl(ID, nextclade_csv):
             unique_variants = sorted(unique_variants, key=sort_func_INV_HA)
         else:
             unique_variants = sorted(unique_variants, key=sort_func)
-
+        # unique_variants does not appear to be sorted deterministically
         for variant in unique_variants:
             col_name = f"sub_{variant}"
             df[col_name] = df["aaSubstitutions"].apply(
