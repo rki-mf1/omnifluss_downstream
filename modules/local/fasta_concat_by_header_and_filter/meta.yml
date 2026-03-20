@@ -1,0 +1,54 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/nf-core/modules/master/modules/meta-schema.json
+name: "fasta_concat_by_header_and_filter"
+description: Concatenate FASTA records by their headers and filter based on exclude patterns and X content
+keywords:
+  - fasta
+  - concatenate
+  - filter
+  - sequence
+tools:
+  - python:
+      description: Python programming language
+      homepage: https://www.python.org/
+      documentation: https://docs.python.org/
+      tool_dev_url: https://github.com/python/cpython
+      licence: ["PSF"]
+
+input:
+  - meta:
+      type: map
+      description: |
+        Groovy Map containing sample information
+        e.g. `[ id:'sample1', single_end:false ]`
+  - fastas:
+      type: file
+      description: List of FASTA files to concatenate
+      pattern: "*.{fasta,fa,fna}"
+  - exclude_patterns:
+      type: string
+      description: Space-separated patterns to exclude from output (headers containing these patterns will be filtered out)
+  - x_threshold:
+      type: float
+      description: Maximum fraction of 'X' characters allowed in sequences (sequences exceeding this threshold will be filtered out)
+
+output:
+  - meta:
+      type: map
+      description: |
+        Groovy Map containing sample information
+        e.g. `[ id:'sample1', single_end:false ]`
+  - versions:
+      type: file
+      description: File containing software versions
+      pattern: "versions.yml"
+  - fasta:
+      type: file
+      description: Concatenated and filtered FASTA file
+      pattern: "*.fasta"
+
+authors:
+  - "@MarieLataretu"
+  - "@DimitriTernovoj"
+  - "@seqeraai"
+maintainers:
+  - "@MarieLataretu"
