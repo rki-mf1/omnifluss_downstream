@@ -11,7 +11,7 @@ include { NEXTCLADE_RUN } from '../modules/nf-core/nextclade/run/main'
 include { NEXTCLADE_POSTPROCESSING } from '../modules/local/nextclade_postprocessing/main'
 include { NEXTCLADE_DATASET_PROVENANCE } from '../modules/local/nextclade_dataset_provenance/main'
 include { NEXTCLADE_PER_SAMPLE_TABLE } from '../modules/local/nextclade_per_sample_table/main'
-include { FASTA_MSA_PHYLO } from '../subworkflows/local/fasta_msa_phylo/main'                                                                           
+include { FASTA_MSA_PHYLO } from '../subworkflows/local/fasta_msa_phylo/main'
 include { MULTIQC } from '../modules/nf-core/multiqc/main'
 include { paramsSummaryMap } from 'plugin/nf-schema'
 include { paramsSummaryMultiqc } from '../subworkflows/nf-core/utils_nfcore_pipeline'
@@ -44,11 +44,10 @@ workflow OMNIFLUSS_DOWNSTREAM {
     NEXTCLADE_SORT(ch_nextclade_sort_input)
     ch_versions = ch_versions.mix(NEXTCLADE_SORT.out.versions)
 
-
+    // path/to/nextclade/sort/output
     ch_nextclade_datasets_unsorted = ch_nextclade_dataset_config
-        // path/to/nextclade/sort/output
         .combine(NEXTCLADE_SORT.out.sort_directory)
-        .map{ meta, dataset_path, nextclade_sort_path ->
+        .map { meta, dataset_path, nextclade_sort_path ->
             [meta, file("${nextclade_sort_path}/${dataset_path}")]
         }
         .filter { _meta, path -> path.exists() }
@@ -74,7 +73,7 @@ workflow OMNIFLUSS_DOWNSTREAM {
 
     ch_nextclade_run_input = NEXTCLADE_DATASETGET.out.dataset
         .join(ch_nextclade_datasets)
-        .multiMap{meta, dataset, fasta ->
+        .multiMap { meta, dataset, fasta ->
             samples: [meta, fasta]
             dataset: [dataset]
         }
@@ -84,8 +83,8 @@ workflow OMNIFLUSS_DOWNSTREAM {
     // Perform the nextclade analysis on a set of consensus sequences, with their corresponding reference dataset
     //
     NEXTCLADE_RUN(
-        ch_nextclade_run_input.samples.dump(tag: 'nextclade_run_input_samples'),
-        ch_nextclade_run_input.dataset.dump(tag: 'nextclade_run_input:dataset'),
+        ch_nextclade_run_input.samples,
+        ch_nextclade_run_input.dataset,
     )
     ch_versions = ch_versions.mix(NEXTCLADE_RUN.out.versions)
 
@@ -168,6 +167,7 @@ workflow OMNIFLUSS_DOWNSTREAM {
                 [meta, fas]
             }
     CAT_CAT(ch_cat_input)
+    ch_versions = ch_versions.mix(CAT_CAT.out.versions)
 
     //
     // Multiple sequence aligment and phylogenetic analysis
@@ -175,6 +175,7 @@ workflow OMNIFLUSS_DOWNSTREAM {
     FASTA_MSA_PHYLO(
         CAT_CAT.out.file_out
     )
+    ch_versions = ch_versions.mix(FASTA_MSA_PHYLO.out.versions)
 
     //
     // Collate and save software versions
