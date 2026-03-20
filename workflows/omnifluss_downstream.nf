@@ -11,15 +11,13 @@ include { NEXTCLADE_RUN } from '../modules/nf-core/nextclade/run/main'
 include { NEXTCLADE_POSTPROCESSING } from '../modules/local/nextclade_postprocessing/main'
 include { NEXTCLADE_DATASET_PROVENANCE } from '../modules/local/nextclade_dataset_provenance/main'
 include { NEXTCLADE_PER_SAMPLE_TABLE } from '../modules/local/nextclade_per_sample_table/main'
+include { FASTA_MSA_PHYLO } from '../subworkflows/local/fasta_msa_phylo/main'                                                                           
 include { MULTIQC } from '../modules/nf-core/multiqc/main'
 include { paramsSummaryMap } from 'plugin/nf-schema'
 include { paramsSummaryMultiqc } from '../subworkflows/nf-core/utils_nfcore_pipeline'
 include { softwareVersionsToYAML } from '../subworkflows/nf-core/utils_nfcore_pipeline'
 include { methodsDescriptionText } from '../subworkflows/local/utils_nfcore_omnifluss_downstream_pipeline'
-include { MAFFT_ALIGN } from '../modules/nf-core/mafft/align/main'                                                                                     
 include { FASTA_CONCAT_BY_HEADER_AND_FILTER } from '../modules/local/fasta_concat_by_header_and_filter/main'
-include { IQTREE } from '../modules/nf-core/iqtree/main'
-include { TREETIME_ANCESTRAL } from '../modules/local/treetime/ancestral/main'                                                                                  
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -171,37 +169,11 @@ workflow OMNIFLUSS_DOWNSTREAM {
             }
     CAT_CAT(ch_cat_input)
 
-    ch_mafft_input = CAT_CAT.out.file_out.map { meta, fas -> 
-        // Find header containing "root"
-        def rootHeader = fas.text
-            .split('\n')
-            .findAll { it.startsWith('>') }
-            .find { it.toLowerCase().contains('root') }
-        
-        // Safe extraction with null check
-        def outgroupId = rootHeader 
-            ? rootHeader.replaceAll('^>', '').split(/\s+/)[0]
-            : false
-        
-        // Add to meta
-        [meta + [outgroup_id: outgroupId], fas]
-    }
-
-    MAFFT_ALIGN(
-        ch_mafft_input.dump(),
-        [[], []], [[], []], [[], []], [[], []], [[], []], false 
-    )
-
-    ch_iqtree_input = MAFFT_ALIGN.out.fas.map { meta, fas -> 
-            [meta, fas, []]
-    }
-    IQTREE(
-        ch_iqtree_input, 
-        [], [], [], [], [], [], [], [], [], [], [], []
-    )
-
-    TREETIME_ANCESTRAL(
-        IQTREE.out.phylogeny.join(MAFFT_ALIGN.out.fas)
+    //
+    // Multiple sequence aligment and phylogenetic analysis
+    //
+    FASTA_MSA_PHYLO(
+        CAT_CAT.out.file_out
     )
 
     //
