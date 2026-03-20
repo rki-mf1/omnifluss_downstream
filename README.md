@@ -11,7 +11,7 @@
 
 ... for SARS-CoV-2, influenza virus (A/H1N1, A/H3N2, A/H5Nx and B/Victoria), measles virus and respiratory syncytial virus (RSV).
 
-By default, the latest available Nextclade dataset will be used for the respective sequences.
+See [here](#nextclade-dataset-specification) for more details on Nextclade datasets.
 
 ## Usage
 
@@ -34,10 +34,9 @@ Each row represents a single or multi fasta file.
 
 Now, you can run the pipeline using:
 
-<!-- TODO nf-core: update the following command to include all required parameters for a minimal example -->
-
 ```bash
 nextflow run rki-mf1/omnifluss_downstream \
+   -r v0.2.0 \
    -profile <docker/singularity/.../institute/PATHOGEN> \
    --input samplesheet.csv \
    --outdir <OUTDIR>
@@ -55,7 +54,9 @@ Currently supported pathogen profiles are:
 For more details on the available parameters, please see the output of:
 
 ```bash
-nextflow run rki-mf1/omnifluss_downstream --help
+nextflow run rki-mf1/omnifluss_downstream \
+   -r v0.2.0 \
+   --help
 ```
 
 > [!WARNING]
@@ -73,6 +74,8 @@ SC2,nextstrain/sars-cov-2/sequences.fasta,sars-cov-2,2025-12-05--10-40-14Z
 By default, the latest available Nextclade dataset will be used for the respective sequences, except for influenza virus (`-profile INV`), where a the dataset version is fixed for the season.
 
 To specify a custom Nextclade dataset version for a pathogen, you can provide your own CSV file via the `--nextclade_dataset_config` parameter. The custom CSV file must follow the same format as described above.
+
+For available Nextclade datasets and their versions, please check the [dataset page](https://github.com/nextstrain/nextclade_data/tree/release/data/) and the [Nextclade documentation](https://docs.nextstrain.org/projects/nextclade/en/stable/user/datasets.html#list-available-datasets).
 
 ## Credits
 

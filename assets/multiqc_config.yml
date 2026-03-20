@@ -35,10 +35,6 @@ custom_data:
       # sort_rows_by: 'Sample Name'  # Use the actual column header
       # sort_rows_order: 'asc'
     headers:
-      Sample Name:
-        # title: 'Sample'
-        description: 'Sample identifier or name'
-        scale: false  # Treat as string
       nextclade.index:
         title: 'Nextclade Index'
         description: 'Nextclade sample index number'
@@ -92,9 +88,6 @@ custom_data:
       no_beeswarm: true
       no_violin: true
     headers:
-      Sequence Name:
-        description: 'Name of the sequence analyzed'
-        scale: false  # Treat as string
       sample:
           title: 'Sample'
           description: 'Sample identifier or name'

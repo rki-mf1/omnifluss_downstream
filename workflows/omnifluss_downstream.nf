@@ -39,12 +39,17 @@ workflow OMNIFLUSS_DOWNSTREAM {
     // NEXTCLADE_SORT:
     // Automatically deposit consensus sequences into species and clade subfolders 
     //
-    // collect all consensus sequences
     ch_nextclade_sort_input = ch_samplesheet.collect { it[1] }
     NEXTCLADE_SORT(ch_nextclade_sort_input)
     ch_versions = ch_versions.mix(NEXTCLADE_SORT.out.versions)
 
-    // path/to/nextclade/sort/output
+
+    //
+    // Prepare input:
+    // select all fasta files from nextclade sort output that correspond to the datasets specified in the nextclade dataset config
+    // the work dir path to the nextclade sort output is combined with the dataset paths from the nextclade dataset config
+    // existing paths are selected for further processing (path/to/nextclade/sort/output)
+    //
     ch_nextclade_datasets_unsorted = ch_nextclade_dataset_config
         .combine(NEXTCLADE_SORT.out.sort_directory)
         .map { meta, dataset_path, nextclade_sort_path ->
@@ -71,6 +76,7 @@ workflow OMNIFLUSS_DOWNSTREAM {
     )
     ch_versions = ch_versions.mix(NEXTCLADE_DATASETGET.out.versions)
 
+    // Prepare input for nextclade run
     ch_nextclade_run_input = NEXTCLADE_DATASETGET.out.dataset
         .join(ch_nextclade_datasets)
         .multiMap { meta, dataset, fasta ->
