@@ -84,8 +84,8 @@ workflow OMNIFLUSS_DOWNSTREAM {
     // Perform the nextclade analysis on a set of consensus sequences, with their corresponding reference dataset
     //
     NEXTCLADE_RUN(
-        ch_nextclade_run_input.samples,
-        ch_nextclade_run_input.dataset,
+        ch_nextclade_run_input.samples.dump(tag: 'nextclade_run_input_samples'),
+        ch_nextclade_run_input.dataset.dump(tag: 'nextclade_run_input:dataset'),
     )
     ch_versions = ch_versions.mix(NEXTCLADE_RUN.out.versions)
 
