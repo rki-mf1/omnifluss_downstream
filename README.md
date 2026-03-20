@@ -76,7 +76,7 @@ To specify a custom Nextclade dataset version for a pathogen, you can provide yo
 
 ## Credits
 
-rki-mf1/omnifluss_downstream was originally written by [Dimitri Ternovoj](https://github.com/DimitriTernovoj) and is currently developed and maintained by [Marie Lataretu](https://github.com/MarieLataretu/).
+rki-mf1/omnifluss_downstream was originally written by [Dimitri Ternovoj](https://github.com/DimitriTernovoj) and is currently further developed and maintained by [Marie Lataretu](https://github.com/MarieLataretu/).
 
 We thank the following people for their extensive assistance in the development of this pipeline:
 
