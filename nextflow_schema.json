@@ -5,28 +5,6 @@
     "description": "Omnifluss pipeline for downstream analyses.",
     "type": "object",
     "$defs": {
-        "nextclade_options": {
-            "title": "Nextclade options",
-            "type": "object",
-            "description": "",
-            "default": "",
-            "properties": {
-                "latest_nextclade_dataset": {
-                    "type": "boolean",
-                    "default": true,
-                    "description": "Use the latest available Nextclade dataset instead of the default"
-                },
-                "nextclade_dataset_config": {
-                    "type": "string",
-                    "format": "file-path",
-                    "mimetype": "text/csv",
-                    "schema": "/assets/schema_nextclade_dataset_config.json",
-                    "description": "Path to comma-separated file containing information about the Nextclade datasets.",
-                    "help_text": "This file defines contains the necessary information to run Nextclade. Use this parameter to specify its location. It has to be a comma-separated file with 4 columns, and a header row."
-                }
-            },
-            "required": ["nextclade_dataset_config"]
-        },
         "input_output_options": {
             "title": "Input/output options",
             "type": "object",
@@ -71,6 +49,44 @@
                     "type": "string",
                     "description": "MultiQC report title. Printed as page header, used for filename if not otherwise specified.",
                     "fa_icon": "fas fa-file-signature"
+                }
+            }
+        },
+        "nextclade_options": {
+            "title": "Nextclade options",
+            "type": "object",
+            "description": "",
+            "default": "",
+            "properties": {
+                "latest_nextclade_dataset": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Use the latest available Nextclade dataset instead of the default"
+                },
+                "nextclade_dataset_config": {
+                    "type": "string",
+                    "format": "file-path",
+                    "mimetype": "text/csv",
+                    "schema": "/assets/schema_nextclade_dataset_config.json",
+                    "description": "Path to comma-separated file containing information about the Nextclade datasets.",
+                    "help_text": "This file defines contains the necessary information to run Nextclade. Use this parameter to specify its location. It has to be a comma-separated file with 4 columns, and a header row."
+                }
+            },
+            "required": ["nextclade_dataset_config"]
+        },
+        "phylogeny_options": {
+            "title": "Phylogeny options",
+            "type": "object",
+            "description": "Define parameters and input for the phylogenetic analysis",
+            "default": "",
+            "properties": {
+                "phylo_exclude_patterns": {
+                    "type": "string",
+                    "description": "Space-separated patterns to exclude from output (headers containing these patterns will be filtered out)"
+                },
+                "phylo_min_X_fraction": {
+                    "type": "number",
+                    "description": "Maximum fraction of 'X' characters allowed in sequences (sequences exceeding this threshold will be filtered out)"
                 }
             }
         },
@@ -227,10 +243,13 @@
     },
     "allOf": [
         {
+            "$ref": "#/$defs/input_output_options"
+        },
+        {
             "$ref": "#/$defs/nextclade_options"
         },
         {
-            "$ref": "#/$defs/input_output_options"
+            "$ref": "#/$defs/phylogeny_options"
         },
         {
             "$ref": "#/$defs/institutional_config_options"

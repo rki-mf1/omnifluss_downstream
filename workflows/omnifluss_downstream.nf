@@ -121,51 +121,67 @@ workflow OMNIFLUSS_DOWNSTREAM {
         ch_multiqc_files = ch_multiqc_files.mix(NEXTCLADE_PER_SAMPLE_TABLE.out.per_sample_table.collect())
     }
 
-    ch_prot_fasta = NEXTCLADE_RUN.out.fasta_translation
-        // filter all HA nextclade outputs
-        .filter { meta, _fastas ->
-            meta.id.endsWith('_HA')
-        }
-        // filer all fastas with HA1 or HA2 from the list of translation fastas
-        .map { meta, fastas -> 
-            def fasta_filtered = fastas.findAll { fasta -> 
-                fasta.name.contains('.HA1.') || fasta.name.contains('.HA2.')
+    //
+    // prepare translated fastas for phylogenetic analysis
+    //
+    if (workflow.profile.contains('INV')) {
+        ch_selcted_prot_fasta = NEXTCLADE_RUN.out.fasta_translation
+            .filter { meta, _fastas ->
+                meta.id.endsWith('_HA')
+            }
+            .map { meta, fastas ->
+                def fasta_filtered = fastas.findAll { fasta ->
+                    fasta.name.contains('.HA1.') || fasta.name.contains('.HA2.')
+                }
+                [meta, fasta_filtered]
+            }
+            .filter { _meta, fastas -> fastas.size() == 2 }
+            .map { meta, fastas ->
+                def fasta_ha1 = fastas.find { fasta -> fasta.name.contains('.HA1.') }
+                def fasta_ha2 = fastas.find { fasta -> fasta.name.contains('.HA2.') }
+                [meta, [fasta_ha1, fasta_ha2]]
+            }
+    }
+    else if (workflow.profile.contains('CVD')) {
+        ch_selcted_prot_fasta = NEXTCLADE_RUN.out.fasta_translation.map { meta, fastas ->
+            def fasta_filtered = fastas.findAll { fasta ->
+                fasta.name.contains('.S.')
             }
             [meta, fasta_filtered]
         }
-        // filer out entries with not exactly 2 HA segments
-        .filter { _meta, fastas -> fastas.size() == 2 }
-        // sort the 2 segments into HA1 and HA2
-        .map { meta, fastas -> 
-            def fasta_ha1 = fastas.find { fasta -> fasta.name.contains('.HA1.') }
-            def fasta_ha2 = fastas.find { fasta -> fasta.name.contains('.HA2.') }
-            [meta, [fasta_ha1, fasta_ha2]]
-        }
-    
-    // concat fasta records samples-wise into single fasta with 2 sequences (HA1 and HA2)   
-    FASTA_CONCAT_BY_HEADER_AND_FILTER(
-        ch_prot_fasta,
-        "-sw- -swine- sw-o-ms /swine/",
-        0.3
-    )
-
-    // concat with external input aa fasta file with full length HA sequences for reference
-    ch_prot_fasta_tmp = FASTA_CONCAT_BY_HEADER_AND_FILTER.out.map { meta, fas ->
-        [meta.id, meta, fas]
     }
-    // if ch_phylo_external_sequences is not empty, concat with ch_prot_fasta_tmp
-    // else, just use ch_prot_fasta_tmp
-    ch_cat_input = params.phylo_external_sequences ? 
-        ch_phylo_external_sequences
-        .map{ meta, fas ->
-            [meta.id, fas] 
-        }
-        .join(ch_prot_fasta_tmp).map { _id, ext_fas, meta, fas -> 
+    else {
+        // all available transladed fasta records  from Nextclade run ouput
+        ch_selcted_prot_fasta = NEXTCLADE_RUN.out.fasta_translation.collect()
+    }
+
+    //
+    // concat amino-acid fasta records samples-wise into single fasta
+    //
+    FASTA_CONCAT_BY_HEADER_AND_FILTER(
+        ch_selcted_prot_fasta,
+        params.phylo_exclude_patterns ? params.phylo_exclude_patterns : [],
+        params.phylo_min_X_fraction ? params.phylo_min_X_fraction : [],
+    )
+    ch_prot_fasta = FASTA_CONCAT_BY_HEADER_AND_FILTER.out.fasta
+
+    //
+    // add external sequences for phylogenetic analysis
+    // concat with external input aa fasta file with full length HA sequences for reference
+    // if ch_phylo_external_sequences is not empty, concat with ch_prot_fasta
+    // else, just use ch_prot_fasta
+    //
+    ch_cat_input = params.phylo_external_sequences
+        ? ch_phylo_external_sequences.map { meta, fas ->
+            [meta.id, fas]
+        }.join(
+            ch_prot_fasta.map { meta, fas ->
+                [meta.id, meta, fas]
+            }
+        ).map { _id, ext_fas, meta, fas ->
             [meta, [ext_fas, fas]]
         }
-        : ch_prot_fasta_tmp.map { _id, meta, fas -> 
-                [meta, fas]
-            }
+        : ch_prot_fasta
     CAT_CAT(ch_cat_input)
     ch_versions = ch_versions.mix(CAT_CAT.out.versions)
 
