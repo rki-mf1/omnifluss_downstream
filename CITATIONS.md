@@ -36,6 +36,22 @@
 
   > Merkel, D. (2014). Docker: lightweight linux containers for consistent development and deployment. Linux Journal, 2014(239), 2. doi: 10.5555/2600239.2600241.
 
+- [IQ-TREE](https://pubmed.ncbi.nlm.nih.gov/32011700/)
+
+  > Minh BQ, Schmidt HA, Chernomor O, Schrempf D, Woodhams MD, von Haeseler A, Lanfear R. IQ-TREE 2: New Models and Efficient Methods for Phylogenetic Inference in the Genomic Era. Mol Biol Evol. 2020 May 1;37(5):1530-1534. doi: 10.1093/molbev/msaa015. Erratum in: Mol Biol Evol. 2020 Aug 1;37(8):2461. doi: 10.1093/molbev/msaa131. PMID: 32011700; PMCID: PMC7182206.
+
+- [MAFFT](https://pubmed.ncbi.nlm.nih.gov/31062021/)
+
+  > Rozewicki J, Li S, Amada KM, Standley DM, Katoh K. MAFFT-DASH: integrated protein sequence and structural alignment. Nucleic Acids Res. 2019 Jul 2;47(W1):W5-W10. doi: 10.1093/nar/gkz342. PMID: 31062021; PMCID: PMC6602451.
+
+- [SeqKit2](https://onlinelibrary.wiley.com/doi/10.1002/imt2.191)
+  
+  > Shen, Wei, BotondSipos, and LiuyangZhao. 2024. “SeqKit2: A Swiss Army Knife for Sequence and Alignment Processing.” iMeta3, e191. https://doi.org/10.1002/imt2.191
+
 - [Singularity](https://pubmed.ncbi.nlm.nih.gov/28494014/)
 
   > Kurtzer GM, Sochat V, Bauer MW. Singularity: Scientific containers for mobility of compute. PLoS One. 2017 May 11;12(5):e0177459. doi: 10.1371/journal.pone.0177459. eCollection 2017. PubMed PMID: 28494014; PubMed Central PMCID: PMC5426675.
+
+- [TreeTime](https://pubmed.ncbi.nlm.nih.gov/29340210/)
+
+  > Sagulenko P, Puller V, Neher RA. TreeTime: Maximum-likelihood phylodynamic analysis. Virus Evol. 2018 Jan 8;4(1):vex042. doi: 10.1093/ve/vex042. PMID: 29340210; PMCID: PMC5758920.
