@@ -27,11 +27,6 @@
                     "type": "boolean",
                     "description": "Flag if theinput genomes are segmented"
                 },
-                "phylo_external_sequences": {
-                    "type": "string",
-                    "description": "Path to comma-separated file containing information about additional samples for the phylogenetic analysis.",
-                    "help_text": "You can add a file with additional amino acid sequences for the phylogenetic analysis. Use this parameter to specify its location. It has to be a comma-separated file with 2 columns, and a header row."
-                },
                 "outdir": {
                     "type": "string",
                     "format": "directory-path",
@@ -86,6 +81,11 @@
             "description": "Define parameters and input for the phylogenetic analysis",
             "default": "",
             "properties": {
+                "phylo_external_sequences": {
+                    "type": "string",
+                    "description": "Path to comma-separated file containing information about additional samples for the phylogenetic analysis.",
+                    "help_text": "You can add a file with additional amino acid sequences for the phylogenetic analysis. Use this parameter to specify its location. It has to be a comma-separated file with 2 columns, and a header row."
+                },
                 "phylo_exclude_patterns": {
                     "type": "string",
                     "description": "Space-separated patterns to exclude from output (headers containing these patterns will be filtered out)"
