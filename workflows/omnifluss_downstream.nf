@@ -45,7 +45,7 @@ workflow OMNIFLUSS_DOWNSTREAM {
     ch_versions = ch_versions.mix(NEXTCLADE_SORT.out.versions)
 
 
-    ch_nextclade_datasets = ch_nextclade_dataset_config
+    ch_nextclade_datasets_unsorted = ch_nextclade_dataset_config
         // path/to/nextclade/sort/output
         .combine(NEXTCLADE_SORT.out.sort_directory)
         .map{ meta, dataset_path, nextclade_sort_path ->
