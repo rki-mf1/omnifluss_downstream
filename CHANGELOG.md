@@ -21,6 +21,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### `Fixed`
 
 - fixed multiqc config for many samples
+- fixed `nextclade sort` output path for influenza B
+  - output path and nextclade dataset name (`nextstrain/flu/vic`) do not match since we want to use the fixed dataset `2025-09-09--12-13-13Z` (not containing subclade C.3.3) which is not available for dataset `nextstrain/flu/b`
 
 ## v0.2.0 [2026-01-27]
 
