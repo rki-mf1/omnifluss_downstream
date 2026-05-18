@@ -4,8 +4,8 @@ process TREETIME_ANCESTRAL {
 
     conda "${moduleDir}/environment.yml"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'https://depot.galaxyproject.org/singularity/treetime:0.11.3--pyhdfd78af_0':
-        'biocontainers/treetime:0.11.3--pyhdfd78af_0' }"
+        'https://depot.galaxyproject.org/singularity/treetime:0.12.1--pyhdfd78af_0':
+        'biocontainers/treetime:0.12.1--pyhdfd78af_0' }"
 
     input:
     tuple val(meta), path(tree), path(alignment)
