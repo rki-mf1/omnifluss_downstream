@@ -27,13 +27,13 @@
                     },
                     "nextclade/datasetget": {
                         "branch": "master",
-                        "git_sha": "41dfa3f7c0ffabb96a6a813fe321c6d1cc5b6e46",
+                        "git_sha": "c302a1ab2512b6791535e1fe971b8cc52efe411d",
                         "installed_by": ["modules"],
                         "patch": "modules/nf-core/nextclade/datasetget/nextclade-datasetget.diff"
                     },
                     "nextclade/run": {
                         "branch": "master",
-                        "git_sha": "41dfa3f7c0ffabb96a6a813fe321c6d1cc5b6e46",
+                        "git_sha": "c302a1ab2512b6791535e1fe971b8cc52efe411d",
                         "installed_by": ["modules"],
                         "patch": "modules/nf-core/nextclade/run/nextclade-run.diff"
                     },

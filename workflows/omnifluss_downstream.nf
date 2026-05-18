@@ -74,7 +74,6 @@ workflow OMNIFLUSS_DOWNSTREAM {
         ch_nextclade_datasetget_input.dataset_name,
         ch_nextclade_datasetget_input.dataset_tag,
     )
-    ch_versions = ch_versions.mix(NEXTCLADE_DATASETGET.out.versions)
 
     // Prepare input for nextclade run
     ch_nextclade_run_input = NEXTCLADE_DATASETGET.out.dataset
@@ -92,7 +91,6 @@ workflow OMNIFLUSS_DOWNSTREAM {
         ch_nextclade_run_input.samples,
         ch_nextclade_run_input.dataset,
     )
-    ch_versions = ch_versions.mix(NEXTCLADE_RUN.out.versions)
 
     //
     // NEXTCLADE_DATASET_PROVENANCE
@@ -202,16 +200,36 @@ workflow OMNIFLUSS_DOWNSTREAM {
     //
     // Collate and save software versions
     //
-    softwareVersionsToYAML(ch_versions)
+
+        //
+    // Collate and save software versions
+    //
+    def topic_versions = channel.topic("versions")
+        .distinct()
+        .branch { entry ->
+            versions_file: entry instanceof Path
+            versions_tuple: true
+        }
+
+    def topic_versions_string = topic_versions.versions_tuple
+        .map { process, tool, version ->
+            [ process[process.lastIndexOf(':')+1..-1], "  ${tool}: ${version}" ]
+        }
+        .groupTuple(by:0)
+        .map { process, tool_versions ->
+            tool_versions.unique().sort()
+            "${process}:\n${tool_versions.join('\n')}"
+        }
+
+    def ch_collated_versions = softwareVersionsToYAML(ch_versions.mix(topic_versions.versions_file))
+        .mix(topic_versions_string)
         .collectFile(
             storeDir: "${params.outdir}/pipeline_info",
             name: 'omnifluss_downstream_software_' + 'mqc_' + 'versions.yml',
             sort: true,
-            newLine: true,
+            newLine: true
         )
-        .set { ch_collated_versions }
-
-
+        
     //
     // MODULE: MultiQC
     //
