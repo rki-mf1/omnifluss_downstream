@@ -23,13 +23,13 @@ process FASTA_CONCAT_BY_HEADER_AND_FILTER {
     def args = task.ext.args ?: ''
     def prefix = task.ext.prefix ?: "${meta.id}"
     def exclude_list = exclude_patterns ? "--exclude_patterns \"${exclude_patterns}\"" : ''
-    def x_threshold = x_threshold ? "--x_threshold ${x_threshold}" : ''
+    def x_threshold_param = x_threshold ? "--x_threshold ${x_threshold}" : ''
     """
     fasta_concat_filter.py \\
         --fastas ${fastas} \\
         --output ${prefix}_concatenated.fasta \\
         ${exclude_list} \\
-        ${x_threshold} \\
+        ${x_threshold_param} \\
         ${args}
 
     cat <<-END_VERSIONS > versions.yml
