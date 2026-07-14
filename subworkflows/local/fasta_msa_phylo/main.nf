@@ -36,10 +36,20 @@ workflow FASTA_MSA_PHYLO {
         false,
     )
     ch_versions = ch_versions.mix(MAFFT_ALIGN.out.versions.first())
-
-    ch_iqtree_input = MAFFT_ALIGN.out.fas.map { meta, fas ->
-        [meta, fas, []]
-    }
+    
+    ch_iqtree_input = MAFFT_ALIGN.out.fas
+        .branch { meta, fas ->
+            def seqCount = fas.text.readLines().count { line -> line.startsWith('>') }
+            
+            pass: seqCount > 2
+                return [meta, fas, []]
+            
+            skip: seqCount <= 2
+                log.warn "Sample ${meta.id}: Only ${seqCount} sequence(s) - skipping MSA and IQTREE (minimum 3 required)"
+                return null
+        }
+        .pass  // Only pass samples with >2 sequences
+    
     IQTREE(
         ch_iqtree_input,
         [],
