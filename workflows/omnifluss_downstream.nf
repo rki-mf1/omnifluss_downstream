@@ -156,7 +156,7 @@ workflow OMNIFLUSS_DOWNSTREAM {
     }
     else {
         // all available transladed fasta records  from Nextclade run ouput
-        ch_selcted_prot_fasta = NEXTCLADE_RUN.out.fasta_translation.collect()
+        ch_selcted_prot_fasta = NEXTCLADE_RUN.out.fasta_translation
     }
 
     //
