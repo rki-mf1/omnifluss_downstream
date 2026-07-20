@@ -12,7 +12,7 @@ def get_nextclade_dataset_version(json_path):
     tag = data.get("version").get("tag")
     name = data.get("attributes").get("name")
     ref_name = data.get("attributes").get("reference name")
-    if "shortcuts" in data:
+    if "shortcuts" in data and len(data.get("shortcuts")) > 0:
         shortcut = data.get("shortcuts")[0]
     else:
         shortcut = None
