@@ -36,12 +36,27 @@ workflow FASTA_MSA_PHYLO {
         false,
     )
     ch_versions = ch_versions.mix(MAFFT_ALIGN.out.versions.first())
+    
+    ch_iqtree_input = MAFFT_ALIGN.out.fas
+        .branch { meta, fas ->
+            def seqCount = fas.text.readLines().count { line -> line.startsWith('>') }
+            
+            skip_tree_build: seqCount <= 2
+                log.warn "Sample ${meta.id}: Only ${seqCount} sequence(s) - skipping IQTREE (minimum 3 required)"
+                return [meta, fas, []]
 
-    ch_iqtree_input = MAFFT_ALIGN.out.fas.map { meta, fas ->
-        [meta, fas, []]
-    }
+            pass_no_bootstrap: seqCount == 3
+                meta = meta + [bootstrap: '']
+                log.warn "Sample ${meta.id}: Only ${seqCount} sequences - bootstrapping for IQTREE disabled (minimum 4 required)"
+                return [meta, fas, []]
+
+            pass_bootstrap: seqCount >= 4
+                meta = meta + [bootstrap: '-bb 1000']
+                return [meta, fas, []]
+        }
+    
     IQTREE(
-        ch_iqtree_input,
+        ch_iqtree_input.pass_no_bootstrap.mix(ch_iqtree_input.pass_bootstrap),
         [],
         [],
         [],
@@ -57,8 +72,13 @@ workflow FASTA_MSA_PHYLO {
     )
     ch_versions = ch_versions.mix(IQTREE.out.versions.first())
 
+    // remove bootstrap meta for propper joining on the meta map
+    ch_iqtree_pylo_output = IQTREE.out.phylogeny.map { meta, treefile ->
+        [meta.findAll { k, v -> k != 'bootstrap' }, treefile]
+    }
+
     TREETIME_ANCESTRAL(
-        IQTREE.out.phylogeny.join(MAFFT_ALIGN.out.fas)
+        ch_iqtree_pylo_output.join(MAFFT_ALIGN.out.fas)
     )
     ch_versions = ch_versions.mix(TREETIME_ANCESTRAL.out.versions)
 

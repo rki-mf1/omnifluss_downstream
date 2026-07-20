@@ -49,6 +49,7 @@ Currently supported pathogen profiles are:
 | CVD          | SARS-CoV-2                  |
 | INV          | Influenza virus             |
 | MSV          | Measles virus               |
+| MPV          | Monkeypox virus             |
 | RSV          | Respiratory syncytial virus |
 
 For more details on the available parameters, please see the output of:
