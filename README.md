@@ -56,7 +56,7 @@ For more details on the available parameters, please see the output of:
 
 ```bash
 nextflow run rki-mf1/omnifluss_downstream \
-   -r v0.2.0 \
+   -r v0.3.0 \
    --help
 ```
 
