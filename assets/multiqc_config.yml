@@ -86,6 +86,7 @@ custom_data:
       col1_header: 'Sequence Name'  # Customize first column header if needed
       only_defined_headers: true
       no_beeswarm: true
+      no_violin: true
     headers:
       sample:
           title: 'Sample'

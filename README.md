@@ -49,6 +49,7 @@ Currently supported pathogen profiles are:
 | CVD          | SARS-CoV-2                  |
 | INV          | Influenza virus             |
 | MSV          | Measles virus               |
+| MPV          | Monkeypox virus             |
 | RSV          | Respiratory syncytial virus |
 
 For more details on the available parameters, please see the output of:
@@ -79,7 +80,7 @@ For available Nextclade datasets and their versions, please check the [dataset p
 
 ## Credits
 
-rki-mf1/omnifluss_downstream was originally written by [Dimitri Ternovoj](https://github.com/DimitriTernovoj) and is currently developed and maintained by [Marie Lataretu](https://github.com/MarieLataretu/).
+rki-mf1/omnifluss_downstream was originally written by [Dimitri Ternovoj](https://github.com/DimitriTernovoj) and is currently further developed and maintained by [Marie Lataretu](https://github.com/MarieLataretu/).
 
 We thank the following people for their extensive assistance in the development of this pipeline:
 
