@@ -77,6 +77,7 @@ workflow OMNIFLUSS_DOWNSTREAM {
             ch_nextclade_datasetget_input.dataset_name,
             ch_nextclade_datasetget_input.dataset_tag,
         )
+        ch_nextclade_dataset = NEXTCLADE_DATASETGET.out.dataset
     }
     // Prepare input for nextclade run
     ch_nextclade_run_input = ch_nextclade_dataset
