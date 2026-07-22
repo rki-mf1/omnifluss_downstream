@@ -66,17 +66,20 @@ workflow OMNIFLUSS_DOWNSTREAM {
         dataset_tag: params.latest_nextclade_dataset ? "" : meta.dataset_tag
     }
 
-    //
-    // NEXTCLADE_DATASETGET:
-    // Download specified nextclade reference dataset
-    //
-    NEXTCLADE_DATASETGET(
-        ch_nextclade_datasetget_input.dataset_name,
-        ch_nextclade_datasetget_input.dataset_tag,
-    )
-
+    if ( params.nextclade_dataset_basedir ) {
+        ch_nextclade_dataset = ch_nextclade_datasetget_input.dataset_name.map { it -> [it[0], file("${params.nextclade_dataset_basedir}/${it[1]}", checkIfExists: true)] }
+    } else {
+        //
+        // NEXTCLADE_DATASETGET:
+        // Download specified nextclade reference dataset
+        //
+        NEXTCLADE_DATASETGET(
+            ch_nextclade_datasetget_input.dataset_name,
+            ch_nextclade_datasetget_input.dataset_tag,
+        )
+    }
     // Prepare input for nextclade run
-    ch_nextclade_run_input = NEXTCLADE_DATASETGET.out.dataset
+    ch_nextclade_run_input = ch_nextclade_dataset
         .join(ch_nextclade_datasets)
         .multiMap { meta, dataset, fasta ->
             samples: [meta, fasta]

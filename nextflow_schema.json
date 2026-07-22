@@ -71,6 +71,11 @@
                     "hidden": true,
                     "description": "Enable caching of the Nextclade dataset retrieval process.",
                     "help_text": "Caching is disable by default for Nextclade dataset retrieval to ensure the latest available dataset is used."
+                },
+                "nextclade_dataset_storedir": {
+                    "type": "string",
+                    "description": "Path to a manually downloaded Nextcalde dataset.",
+                    "help_text": "The structure of the subfolder is expected to match the `nextclade_dataset_name` specified via `nextclade_dataset_config`. For example, with `--nextclade_dataset_basedir my/dataset/dir` for Mpox clade I, the subfolder structure `nextstrain/mpox/clade-i` is expected, thus `my/dataset/dir/nextstrain/mpox/clade-i`."
                 }
             },
             "required": ["nextclade_dataset_config"]
