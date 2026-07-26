@@ -95,9 +95,10 @@
                     "type": "string",
                     "description": "Space-separated patterns to exclude from output (headers containing these patterns will be filtered out)"
                 },
-                "phylo_min_X_fraction": {
+                "phylo_max_X_fraction": {
                     "type": "number",
-                    "description": "Maximum fraction of 'X' characters allowed in sequences (sequences exceeding this threshold will be filtered out)"
+                    "description": "Maximum fraction of 'X' characters allowed in sequences (sequences exceeding this threshold will be filtered out)",
+                    "default": 0.3
                 }
             }
         },

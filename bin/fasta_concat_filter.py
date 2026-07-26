@@ -38,7 +38,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--x_threshold",
         type=float,
-        help="Maximum fraction of X characters allowed (default: 0.5)",
+        help="Maximum fraction of X characters allowed",
     )
     parser.add_argument(
         "--line_width",
