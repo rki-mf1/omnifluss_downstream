@@ -165,7 +165,7 @@ workflow OMNIFLUSS_DOWNSTREAM {
     FASTA_CONCAT_BY_HEADER_AND_FILTER(
         ch_selcted_prot_fasta,
         params.phylo_exclude_patterns ? params.phylo_exclude_patterns : [],
-        params.phylo_min_X_fraction ? params.phylo_min_X_fraction : [],
+        params.phylo_max_X_fraction ? params.phylo_max_X_fraction : [],
     )
     ch_prot_fasta = FASTA_CONCAT_BY_HEADER_AND_FILTER.out.fasta
 
