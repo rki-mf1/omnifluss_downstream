@@ -36,7 +36,7 @@ Now, you can run the pipeline using:
 
 ```bash
 nextflow run rki-mf1/omnifluss_downstream \
-   -r v0.2.0 \
+   -r v0.3.1 \
    -profile <docker/singularity/.../institute/PATHOGEN> \
    --input samplesheet.csv \
    --outdir <OUTDIR>

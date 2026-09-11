@@ -5,9 +5,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+## v0.3.1 [2026-09-11]
+
 ### `Changed`
 
-- X filter for translated sequences applied by default (0.3)
+- X filter for translated sequences applied by default (`0.3`)
   - increases the likelihood that mafft and IQtree runs through
   - fixed variable name to `phylo_max_X_fraction` 
 
