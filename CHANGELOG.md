@@ -5,6 +5,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+## v0.3.2 [2026-10-29]
+
+### `Updated`
+
+- updated nextclade datasets for INV season 2027
+  - latest datasets as of 2026-10-28 
+
 ## v0.3.1 [2026-09-11]
 
 ### `Changed`
